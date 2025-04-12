@@ -32,6 +32,7 @@ MCPStudio follows a clean domain-driven design with:
 - Monitor server status and health in real-time (deployed, deploying, failed)
 - Organize servers with tags and collections
 - View server details and configurations
+- RESTful API endpoints for server CRUD operations
 
 ### Tool Discovery and Testing
 - Visually browse tools exposed by MCP servers
@@ -151,7 +152,8 @@ MCPstudio/
    cd backend/mcp_studio_backend
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -e .
+   pip install uv
+   uv pip install -e .
    ```
 
 3. Set up the frontend
@@ -175,6 +177,28 @@ MCPstudio/
    ```
 
 5. Open your browser and navigate to http://localhost:3000
+
+## API Endpoints
+
+### Server Management
+- `POST /api/servers` - Create a new server
+- `GET /api/servers` - List all servers
+- `GET /api/servers/{server_id}` - Get server details
+- `PUT /api/servers/{server_id}` - Update server
+- `DELETE /api/servers/{server_id}` - Delete server
+- `POST /api/servers/{server_id}/connect` - Connect to server
+- `POST /api/servers/{server_id}/disconnect` - Disconnect from server
+
+### Tool Management
+- `GET /api/servers/{server_id}/tools` - List tools for a server
+- `GET /api/tools/{tool_id}` - Get tool details
+- `POST /api/servers/{server_id}/tools/{tool_id}/execute` - Execute a tool
+
+### Authentication
+- `POST /api/auth/token` - Get JWT access token
+- `GET /api/auth/google/auth` - Get Google OAuth URL
+- `GET /api/auth/google/callback` - Process Google OAuth callback
+- `GET /api/auth/me` - Get current user information
 
 ## Contributing
 
