@@ -122,7 +122,7 @@ MCPstudio/
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/mcpstudio.git
+   git clone https://github.com/lonexreb/mcpstudio.git
    cd mcpstudio
    ```
 
