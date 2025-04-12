@@ -6,6 +6,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from mcp_studio.api.routes import server_routes, tool_routes, auth_routes
+from mcp_studio.api.websocket import server_status, tool_execution
 from mcp_studio.config.settings import settings
 from mcp_studio.container import container
 from mcp_studio.infrastructure.database.connection import database
@@ -53,6 +54,10 @@ app.add_middleware(
 app.include_router(auth_routes.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(server_routes.router, prefix="/api/servers", tags=["Servers"])
 app.include_router(tool_routes.router, prefix="/api", tags=["Tools"])
+
+# Include WebSocket routers
+app.include_router(server_status.router, tags=["WebSockets"])
+app.include_router(tool_execution.router, tags=["WebSockets"])
 
 
 @app.get("/", tags=["Health Check"])
