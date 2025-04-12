@@ -65,6 +65,8 @@ MCPStudio follows a clean domain-driven design with:
 - ✅ JWT authentication system with OAuth integration
 - ✅ Google Drive integration with OAuth flow
 - ✅ Unit tests for core functionality
+- ✅ RESTful API endpoints for server management
+- ✅ Server controller with CRUD operations
 
 ### Phase 2: Frontend Development (In Progress)
 - React frontend with modern toolchain
