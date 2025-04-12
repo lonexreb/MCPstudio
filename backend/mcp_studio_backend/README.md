@@ -67,25 +67,33 @@ The backend follows a domain-driven design architecture with clear separation of
 mcp_studio_backend/
 ├── src/
 │   └── mcp_studio/
-│       ├── api/                # API layer (controllers, routes, schemas)
-│       │   ├── controllers/    # Request handlers
-│       │   ├── routes/         # API endpoint definitions
-│       │   └── schemas/        # Pydantic models for request/response
-│       ├── application/        # Application layer
-│       │   ├── services/       # Business logic
-│       │   └── use_cases/      # Use case implementations
-│       ├── domain/             # Domain layer
-│       │   ├── entities/       # Core business entities
-│       │   ├── repositories/   # Repository interfaces
-│       │   └── value_objects/  # Value objects
-│       ├── infrastructure/     # Infrastructure layer
-│       │   ├── database/       # Database implementations
-│       │   ├── repositories/   # Repository implementations
-│       │   └── services/       # External service integrations
-│       ├── container.py        # Dependency injection container
-│       └── main.py             # Application entry point
-├── tests/                      # Test suite
-└── pyproject.toml             # Project configuration
+│       ├── api/                        # API layer
+│       │   ├── controllers/            # Request handlers
+│       │   ├── routes/                 # API endpoint definitions
+│       │   ├── schemas/                # Pydantic data models
+│       │   └── websocket/              # WebSocket connections
+│       ├── application/                # Application layer
+│       │   ├── dtos/                   # Data transfer objects
+│       │   └── services/               # Business logic services
+│       ├── config/                     # Configuration
+│       │   └── settings.py             # Application settings
+│       ├── domain/                     # Domain layer 
+│       │   ├── events/                 # Domain events
+│       │   ├── models/                 # Core domain entities
+│       │   ├── repositories/           # Repository interfaces
+│       │   └── services/               # Domain services
+│       ├── infrastructure/             # Infrastructure layer
+│       │   ├── database/               # Database connections
+│       │   │   └── repositories/       # MongoDB implementations
+│       │   ├── external/               # External services
+│       │   │   └── google_drive/       # Google Drive integration
+│       │   ├── logging/                # Logging infrastructure
+│       │   └── messaging/              # Event bus implementation
+│       ├── utils/                      # Utility functions
+│       ├── container.py                # Dependency injection
+│       └── main.py                     # Application entry point
+├── tests/                              # Test suite
+└── pyproject.toml                     # Project configuration
 ```
 
 ## Getting Started
@@ -93,8 +101,8 @@ mcp_studio_backend/
 ### Prerequisites
 
 - Python 3.10+
-- MongoDB
-- UV package manager (optional, but recommended)
+- MongoDB (optional - backend includes a mock DB mode for development)
+- UV package manager (optional, but recommended for faster package installation)
 
 ### Installation
 
@@ -112,9 +120,11 @@ mcp_studio_backend/
 
 3. Install dependencies
    ```bash
-   pip install -e .
-   # Or with UV
-   uv pip install -e .
+   pip install -r requirements.txt
+   
+   # Or with UV (faster)
+   pip install uv
+   uv pip install -r requirements.txt
    ```
 
 4. Configure environment variables
@@ -125,8 +135,10 @@ mcp_studio_backend/
 
 5. Start the development server
    ```bash
-   uvicorn mcp_studio.main:app --reload
+   uvicorn mcp_studio.main:app --reload --port 8000
    ```
+   
+   Note: If MongoDB is not available, the application will automatically use a mock database implementation for development purposes. This allows you to develop and test without requiring a MongoDB instance.
 
 ### Running Tests
 
@@ -140,6 +152,33 @@ Once the server is running, you can access the API documentation at:
 
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
+
+## Key Features
+
+### Fault-Tolerant Database
+- Automatically uses mock collections when MongoDB is unavailable
+- Graceful error handling for database operations
+- Support for development without requiring a database
+
+### Event-Based Communication
+- EventBus implementation for publishing and subscribing to events
+- WebSocket support for real-time updates
+- Event types for server status and tool execution
+
+### Domain-Driven Design
+- Clean separation between domain, application, and infrastructure layers
+- Repository pattern for data access abstraction
+- Dependency injection for modular and testable code
+
+### RESTful API
+- Complete CRUD operations for servers and tools
+- WebSocket endpoints for real-time updates
+- Consistent error handling
+
+### MCP Protocol Implementation
+- Support for Google Drive integration
+- Extensible architecture for adding new integrations
+- Tool discovery and execution
 
 ## Contributing
 

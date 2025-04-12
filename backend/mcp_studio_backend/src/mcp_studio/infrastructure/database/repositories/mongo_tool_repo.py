@@ -14,10 +14,9 @@ class MongoToolRepository(ToolRepository):
         self.database = database
         self.collection_name = "tools"
     
-    async def _get_collection(self):
+    def _get_collection(self):
         """Get the MongoDB collection."""
-        db = await self.database.db()
-        return db[self.collection_name]
+        return self.database.get_collection(self.collection_name)
     
     def _to_domain_entity(self, db_tool: Dict[str, Any]) -> Tool:
         """Convert database representation to domain entity."""

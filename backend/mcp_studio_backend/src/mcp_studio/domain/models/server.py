@@ -1,8 +1,9 @@
 # File: src/mcp_studio/domain/models/server.py
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
-from mcp_studio.domain.models.tool import Tool
+if TYPE_CHECKING:
+    from mcp_studio.domain.models.tool import Tool
 
 
 class Server:

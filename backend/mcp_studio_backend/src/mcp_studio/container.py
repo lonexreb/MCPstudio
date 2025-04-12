@@ -65,7 +65,8 @@ class Container(containers.DeclarativeContainer):
         AuthService
     )
     
-    server_service = providers.Singleton(
+    # We need to create these as providers.Factory first to avoid circular dependency
+    server_service = providers.Factory(
         ServerService,
         server_repository=server_repository,
         tool_repository=tool_repository,
@@ -73,10 +74,25 @@ class Container(containers.DeclarativeContainer):
         event_bus=event_bus
     )
     
-    tool_service = providers.Singleton(
+    tool_service = providers.Factory(
         ToolService,
         tool_repository=tool_repository,
-        server_repository=server_repository
+        server_repository=server_repository,
+        mcp_protocol_service=mcp_protocol_service,
+        event_bus=event_bus
+    )
+    
+    # Now create singletons with the cross-dependencies
+    server_service_singleton = providers.Singleton(
+        lambda service, tool_svc: service.with_tool_service(tool_svc),
+        service=server_service,
+        tool_svc=tool_service
+    )
+    
+    tool_service_singleton = providers.Singleton(
+        lambda service, server_svc: service.with_server_service(server_svc),
+        service=tool_service,
+        server_svc=server_service
     )
     
     # Controllers
@@ -88,14 +104,14 @@ class Container(containers.DeclarativeContainer):
     
     server_controller = providers.Singleton(
         ServerController,
-        server_service=server_service,
+        server_service=server_service_singleton,
         auth_controller=auth_controller
     )
     
     tool_controller = providers.Singleton(
         ToolController,
-        tool_service=tool_service,
-        server_service=server_service,
+        tool_service=tool_service_singleton,
+        server_service=server_service_singleton,
         auth_controller=auth_controller
     )
 

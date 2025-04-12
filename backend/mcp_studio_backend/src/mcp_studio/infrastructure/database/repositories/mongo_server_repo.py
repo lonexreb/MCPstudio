@@ -15,10 +15,9 @@ class MongoServerRepository(ServerRepository):
         self.database = database
         self.collection_name = "servers"
     
-    async def _get_collection(self):
+    def _get_collection(self):
         """Get the MongoDB collection."""
-        db = await self.database.db()
-        return db[self.collection_name]
+        return self.database.get_collection(self.collection_name)
     
     def _to_domain_entity(self, db_server: Dict[str, Any]) -> Server:
         """Convert database representation to domain entity."""
@@ -148,3 +147,13 @@ class MongoServerRepository(ServerRepository):
             return result.deleted_count > 0
         except Exception:
             return False
+    
+    async def find_by_criteria(self, criteria: Dict[str, Any]) -> List[Server]:
+        """Find servers matching the given criteria."""
+        collection = await self._get_collection()
+        
+        servers = []
+        async for db_server in collection.find(criteria):
+            servers.append(self._to_domain_entity(db_server))
+        
+        return servers
