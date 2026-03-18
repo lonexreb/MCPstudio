@@ -1,3 +1,6 @@
+![MCPStudio Banner](./assets/banner-light.svg#gh-light-mode-only)
+![MCPStudio Banner](./assets/banner-dark.svg#gh-dark-mode-only)
+
 # MCPStudio: The Postman for Model Context Protocol
 
 ## Introduction

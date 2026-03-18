@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300">
+  <defs>
+    <linearGradient id="bgGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="shieldGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <linearGradient id="lineGradLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0.6"/>
+    </linearGradient>
+    <linearGradient id="lineGradRight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d9488" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0d9488" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="300" fill="url(#bgGradLight)" rx="8"/>
+
+  <!-- Connection lines from nodes to center -->
+  <!-- Left side lines -->
+  <line x1="340" y1="90" x2="540" y2="120" stroke="url(#lineGradLeft)" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <line x1="320" y1="150" x2="540" y2="140" stroke="url(#lineGradLeft)" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <line x1="340" y1="210" x2="540" y2="160" stroke="url(#lineGradLeft)" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Right side lines -->
+  <line x1="660" y1="120" x2="860" y2="90" stroke="url(#lineGradRight)" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <line x1="660" y1="140" x2="880" y2="150" stroke="url(#lineGradRight)" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <line x1="660" y1="160" x2="860" y2="210" stroke="url(#lineGradRight)" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Left diamond nodes -->
+  <g transform="translate(330,80)">
+    <rect width="20" height="20" rx="3" fill="#2563eb" opacity="0.8" transform="rotate(45,10,10)"/>
+  </g>
+  <g transform="translate(310,140)">
+    <rect width="20" height="20" rx="3" fill="#2563eb" opacity="0.6" transform="rotate(45,10,10)"/>
+  </g>
+  <g transform="translate(330,200)">
+    <rect width="20" height="20" rx="3" fill="#2563eb" opacity="0.8" transform="rotate(45,10,10)"/>
+  </g>
+
+  <!-- Right diamond nodes -->
+  <g transform="translate(850,80)">
+    <rect width="20" height="20" rx="3" fill="#0d9488" opacity="0.8" transform="rotate(45,10,10)"/>
+  </g>
+  <g transform="translate(870,140)">
+    <rect width="20" height="20" rx="3" fill="#0d9488" opacity="0.6" transform="rotate(45,10,10)"/>
+  </g>
+  <g transform="translate(850,200)">
+    <rect width="20" height="20" rx="3" fill="#0d9488" opacity="0.8" transform="rotate(45,10,10)"/>
+  </g>
+
+  <!-- Center shield/box icon -->
+  <g transform="translate(600,140)">
+    <!-- Outer shield shape -->
+    <path d="M-50,-60 L50,-60 L50,20 L0,60 L-50,20 Z" fill="url(#shieldGradLight)" opacity="0.12" stroke="url(#shieldGradLight)" stroke-width="2"/>
+    <!-- Inner protocol symbol: connected dots forming MCP pattern -->
+    <circle cx="0" cy="-30" r="6" fill="#2563eb"/>
+    <circle cx="-25" cy="5" r="6" fill="#7c3aed"/>
+    <circle cx="25" cy="5" r="6" fill="#0d9488"/>
+    <circle cx="0" cy="30" r="5" fill="#7c3aed" opacity="0.8"/>
+    <!-- Inner connection lines -->
+    <line x1="0" y1="-24" x2="-22" y2="1" stroke="#7c3aed" stroke-width="2" opacity="0.7"/>
+    <line x1="0" y1="-24" x2="22" y2="1" stroke="#2563eb" stroke-width="2" opacity="0.7"/>
+    <line x1="-22" y1="9" x2="0" y2="26" stroke="#0d9488" stroke-width="2" opacity="0.7"/>
+    <line x1="22" y1="9" x2="0" y2="26" stroke="#7c3aed" stroke-width="2" opacity="0.7"/>
+    <line x1="-25" y1="5" x2="25" y2="5" stroke="#2563eb" stroke-width="1.5" opacity="0.4"/>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="238" text-anchor="middle" font-family="'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#0f172a" letter-spacing="1">MCPStudio</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="268" text-anchor="middle" font-family="'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="14" font-weight="400" fill="#64748b" letter-spacing="2">THE POSTMAN FOR MODEL CONTEXT PROTOCOL</text>
+
+  <!-- Small decorative dots -->
+  <circle cx="430" cy="100" r="2" fill="#2563eb" opacity="0.3"/>
+  <circle cx="770" cy="100" r="2" fill="#0d9488" opacity="0.3"/>
+  <circle cx="450" cy="200" r="2" fill="#7c3aed" opacity="0.3"/>
+  <circle cx="750" cy="200" r="2" fill="#7c3aed" opacity="0.3"/>
+  <circle cx="500" cy="80" r="1.5" fill="#2563eb" opacity="0.2"/>
+  <circle cx="700" cy="80" r="1.5" fill="#0d9488" opacity="0.2"/>
+</svg>
