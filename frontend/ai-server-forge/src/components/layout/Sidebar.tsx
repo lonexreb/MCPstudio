@@ -5,12 +5,13 @@ import {
   Server, 
   Wrench, 
   Database, 
-  Lightbulb, 
-  Settings, 
+  Lightbulb,
+  Settings,
   PlusCircle,
   Package,
   Layout,
-  LifeBuoy
+  LifeBuoy,
+  Workflow
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -85,11 +86,17 @@ const Sidebar = ({ activePath = "/" }: SidebarProps) => {
             href="/resources" 
             active={activePath === "/resources"} 
           />
-          <SidebarItem 
-            icon={Lightbulb} 
-            label="Prompt Templates" 
-            href="/prompts" 
-            active={activePath === "/prompts"} 
+          <SidebarItem
+            icon={Lightbulb}
+            label="Prompt Templates"
+            href="/prompts"
+            active={activePath === "/prompts"}
+          />
+          <SidebarItem
+            icon={Workflow}
+            label="Pipelines"
+            href="/pipelines"
+            active={activePath === "/pipelines" || activePath.startsWith("/pipelines/")}
           />
         </nav>
       </div>
