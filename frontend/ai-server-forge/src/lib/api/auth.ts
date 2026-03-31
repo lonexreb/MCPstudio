@@ -34,7 +34,7 @@ export const authApi = {
   },
 
   getGoogleAuthUrl: async (serverId?: string): Promise<{ auth_url: string; state: string }> => {
-    const params = serverId ? `?server_id=${serverId}` : '';
+    const params = serverId ? `?server_id=${encodeURIComponent(serverId)}` : '';
     const response = await fetch(`${API_BASE_URL}/api/auth/google/auth${params}`);
 
     if (!response.ok) {

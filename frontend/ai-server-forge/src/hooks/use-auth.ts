@@ -19,7 +19,7 @@ export function useCurrentUser() {
   const { token, isAuthenticated } = useAuthStore();
 
   return useQuery({
-    queryKey: ['currentUser'],
+    queryKey: ['currentUser', token],
     queryFn: () => authApi.getCurrentUser(token!),
     enabled: isAuthenticated && !!token,
   });
