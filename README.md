@@ -11,10 +11,13 @@ MCPStudio is a web platform for creating, testing, managing, and discovering [Mo
 
 - **Server Management** — Create, configure, connect to, and monitor MCP servers with status tracking (connected / disconnected / error)
 - **Tool Discovery & Execution** — Auto-discover tools exposed by MCP servers, fill parameters via dynamic forms, and view formatted responses
+- **Execution Dashboard** — Real-time metrics with Recharts (timing, tool distribution, success/error rates) and persistent history via IndexedDB
+- **Visual Pipeline Builder** — Drag-and-drop React Flow canvas to chain MCP tools into DAG pipelines with auto-layout and frontend execution engine
+- **Tool Execution Arena** — Side-by-side resizable panels for comparing tool executions with JSON diff and timing comparison
+- **Config Export/Import** — Export server configs as JSON or YAML (credentials redacted); import via file upload, drag & drop, or paste
 - **Authentication** — JWT-based platform auth with OAuth2 flow support for service integrations (Google Drive)
 - **Real-time Updates** — WebSocket streams for tool execution and server status changes
 - **Google Drive Integration** — Connect via OAuth, list/search/retrieve files, create folders
-- **Dark Mode** — Full dark/light theme support
 
 ## Tech Stack
 
@@ -31,6 +34,9 @@ MCPStudio is a web platform for creating, testing, managing, and discovering [Mo
 | Forms | react-hook-form + Zod validation |
 | Routing | react-router-dom 6 |
 | Charts | Recharts 2 |
+| Node Graph | @xyflow/react (React Flow) + @dagrejs/dagre |
+| Local DB | Dexie (IndexedDB wrapper) |
+| Config Parsing | js-yaml + Zod |
 | Notifications | Sonner |
 
 ### Backend
@@ -67,11 +73,16 @@ backend/mcp_studio_backend/src/mcp_studio/
 frontend/ai-server-forge/src/
 ├── features/
 │   ├── auth/         # Login page, AuthGuard, auth store, use-auth hook
-│   ├── servers/      # Dashboard, ServerDetail, ServerCard, config editors, use-servers
-│   └── tools/        # ToolEditor, ParameterEditor, CodeEditor, use-tools
+│   ├── servers/      # Dashboard, ServerDetail, ServerCard, ConfigExport,
+│   │                 # ConfigImport, config-serializer (JSON/YAML), use-servers
+│   ├── tools/        # ToolEditor, ParameterEditor, CodeEditor, use-tools
+│   ├── pipeline/     # PipelineList, PipelineEditor, React Flow canvas,
+│   │                 # custom nodes, auto-layout (dagre), pipeline engine
+│   └── execution/    # Arena (side-by-side comparison), ExecutionDashboard,
+│                     # ExecutionHistory, ExecutionMetrics, ParameterForm
 ├── components/
 │   ├── layout/       # MainLayout, Header, Sidebar
-│   └── ui/           # shadcn/ui component library
+│   └── ui/           # shadcn/ui component library (47+ components)
 ├── stores/           # Zustand stores (auth, ui, server)
 ├── lib/api/          # Typed API client with auto bearer token injection
 ├── hooks/            # Shared hooks (use-mobile, use-toast)
@@ -139,11 +150,11 @@ MCPStudio follows a phased enhancement plan inspired by patterns from [Unsloth S
 |-------|---------|--------|
 | 0 | Foundation — Zustand stores, React Query, typed API client, auth guard | Done |
 | 1 | Feature-sliced architecture reorganization | Done |
-| 2 | UX — Server Connection Wizard, terminal-style loading, collapsible sections | Planned |
-| 3 | Real-time Execution Dashboard — SSE streaming, Recharts metrics, IndexedDB history | Planned |
-| 4 | **Visual MCP Pipeline Builder** — React Flow canvas to chain tools into DAG pipelines | Planned |
-| 5 | Tool Execution Arena — side-by-side comparison with JSON diff | Planned |
-| 6 | Config Export/Import — JSON/YAML with Zod validation | Planned |
+| 2 | UX — Server Connection Wizard, terminal-style loading, collapsible sections | Done |
+| 3 | Real-time Execution Dashboard — Recharts metrics, IndexedDB history (Dexie) | Done |
+| 4 | Visual MCP Pipeline Builder — React Flow canvas, DAG execution, dagre auto-layout | Done |
+| 5 | Tool Execution Arena — side-by-side comparison with JSON diff | Done |
+| 6 | Config Export/Import — JSON/YAML with Zod validation, drag & drop import | Done |
 
 See [EXPERIMENT.md](./EXPERIMENT.md) for detailed tracking.
 
