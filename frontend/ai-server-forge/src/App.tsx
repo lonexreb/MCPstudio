@@ -4,11 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AuthGuard from "@/components/auth/AuthGuard";
-import Login from "./pages/Login";
-import Index from "./pages/Index";
-import NewServer from "./pages/NewServer";
-import ServerDetail from "./pages/ServerDetail";
+import AuthGuard from "@/features/auth/components/AuthGuard";
+import Login from "@/features/auth/pages/Login";
+import Dashboard from "@/features/servers/pages/Dashboard";
+import NewServer from "@/features/servers/pages/NewServer";
+import ServerDetail from "@/features/servers/pages/ServerDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -29,15 +29,15 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/new-server" element={<AuthGuard><NewServer /></AuthGuard>} />
           <Route path="/server/:id" element={<AuthGuard><ServerDetail /></AuthGuard>} />
-          <Route path="/tools" element={<AuthGuard><Index /></AuthGuard>} />
-          <Route path="/resources" element={<AuthGuard><Index /></AuthGuard>} />
-          <Route path="/prompts" element={<AuthGuard><Index /></AuthGuard>} />
-          <Route path="/docs" element={<AuthGuard><Index /></AuthGuard>} />
-          <Route path="/support" element={<AuthGuard><Index /></AuthGuard>} />
-          <Route path="/settings" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/tools" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/resources" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/prompts" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/docs" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/support" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/settings" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

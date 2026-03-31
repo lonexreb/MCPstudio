@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useLogin } from '@/hooks/use-auth';
+import { useLogin } from '@/features/auth/hooks/use-auth';
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),

@@ -1,8 +1,8 @@
 
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
-import ServerList from '@/components/server/ServerList';
-import { useServers } from '@/hooks/use-servers';
+import ServerList from '@/features/servers/components/ServerList';
+import { useServers } from '@/features/servers/hooks/use-servers';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {

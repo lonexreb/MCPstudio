@@ -19,8 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useServer, useConnectServer, useDisconnectServer, useUpdateServer } from '@/hooks/use-servers';
-import { useTools } from '@/hooks/use-tools';
+import { useServer, useConnectServer, useDisconnectServer, useUpdateServer } from '@/features/servers/hooks/use-servers';
+import { useTools } from '@/features/tools/hooks/use-tools';
 import type { ToolResponse, ToolReference } from '@/types/api';
 
 const ServerDetail = () => {

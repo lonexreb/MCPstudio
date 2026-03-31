@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateServer } from '@/hooks/use-servers';
+import { useCreateServer } from '@/features/servers/hooks/use-servers';
 
 const NewServer = () => {
   const navigate = useNavigate();
