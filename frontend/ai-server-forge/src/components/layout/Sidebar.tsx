@@ -11,7 +11,8 @@ import {
   Package,
   Layout,
   LifeBuoy,
-  Workflow
+  Workflow,
+  Swords
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -97,6 +98,12 @@ const Sidebar = ({ activePath = "/" }: SidebarProps) => {
             label="Pipelines"
             href="/pipelines"
             active={activePath === "/pipelines" || activePath.startsWith("/pipelines/")}
+          />
+          <SidebarItem
+            icon={Swords}
+            label="Arena"
+            href="/arena"
+            active={activePath === "/arena"}
           />
         </nav>
       </div>
