@@ -79,6 +79,7 @@ const ConfigImport = () => {
         name: parsed.name,
         description: parsed.description,
         connection_url: parsed.connection_url,
+        ...(parsed.auth_type ? { auth_config: { type: parsed.auth_type, credentials: {} } } : {}),
       },
       {
         onSuccess: (server) => {
