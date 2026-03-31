@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AuthGuard from "@/components/auth/AuthGuard";
+import Login from "./pages/Login";
 import Index from "./pages/Index";
 import NewServer from "./pages/NewServer";
 import ServerDetail from "./pages/ServerDetail";
@@ -26,15 +28,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/new-server" element={<NewServer />} />
-          <Route path="/server/:id" element={<ServerDetail />} />
-          <Route path="/tools" element={<Index />} />
-          <Route path="/resources" element={<Index />} />
-          <Route path="/prompts" element={<Index />} />
-          <Route path="/docs" element={<Index />} />
-          <Route path="/support" element={<Index />} />
-          <Route path="/settings" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/new-server" element={<AuthGuard><NewServer /></AuthGuard>} />
+          <Route path="/server/:id" element={<AuthGuard><ServerDetail /></AuthGuard>} />
+          <Route path="/tools" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/resources" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/prompts" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/docs" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/support" element={<AuthGuard><Index /></AuthGuard>} />
+          <Route path="/settings" element={<AuthGuard><Index /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

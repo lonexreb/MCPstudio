@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useServer, useConnectServer, useDisconnectServer, useUpdateServer } from '@/hooks/use-servers';
 import { useTools } from '@/hooks/use-tools';
-import type { ToolResponse } from '@/types/api';
+import type { ToolResponse, ToolReference } from '@/types/api';
 
 const ServerDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -354,30 +354,39 @@ const ServerDetail = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(tools || []).map((tool: ToolResponse) => (
-                      <div
-                        key={tool.id}
-                        className="p-5 border rounded-lg hover:border-primary/50 cursor-pointer transition-colors"
-                      >
-                        <div className="flex justify-between">
-                          <h3 className="font-medium flex items-center gap-2">
-                            <Hammer className="h-4 w-4 text-primary" />
-                            {tool.name}
-                          </h3>
-                          <Badge variant="outline" className="text-xs">
-                            {Object.keys(tool.parameters).length} params
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1 mb-3">
-                          {tool.description}
-                        </p>
-                        <div className="space-y-1.5">
-                          <div className="bg-muted rounded p-1 px-2 text-xs font-mono overflow-x-auto">
-                            {tool.name}({Object.keys(tool.parameters).join(', ')})
+                    {serverTools.map((tool) => {
+                      const params = 'parameters' in tool && tool.parameters
+                        ? Object.keys(tool.parameters as Record<string, any>)
+                        : [];
+                      return (
+                        <div
+                          key={tool.id}
+                          className="p-5 border rounded-lg hover:border-primary/50 cursor-pointer transition-colors"
+                        >
+                          <div className="flex justify-between">
+                            <h3 className="font-medium flex items-center gap-2">
+                              <Hammer className="h-4 w-4 text-primary" />
+                              {tool.name}
+                            </h3>
+                            {params.length > 0 && (
+                              <Badge variant="outline" className="text-xs">
+                                {params.length} params
+                              </Badge>
+                            )}
                           </div>
+                          <p className="text-sm text-muted-foreground mt-1 mb-3">
+                            {tool.description}
+                          </p>
+                          {params.length > 0 && (
+                            <div className="space-y-1.5">
+                              <div className="bg-muted rounded p-1 px-2 text-xs font-mono overflow-x-auto">
+                                {tool.name}({params.join(', ')})
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
