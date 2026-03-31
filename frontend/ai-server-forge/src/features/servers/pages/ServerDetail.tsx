@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -12,22 +12,33 @@ import {
   Plug,
   PlugZap,
   Unplug,
+  Play,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useServer, useConnectServer, useDisconnectServer, useUpdateServer } from '@/features/servers/hooks/use-servers';
 import { useTools } from '@/features/tools/hooks/use-tools';
+import ExecutionPanel from '@/features/execution/components/ExecutionPanel';
+import ExecutionMetrics from '@/features/execution/components/ExecutionMetrics';
+import ExecutionHistory from '@/features/execution/components/ExecutionHistory';
 import type { ToolResponse, ToolReference } from '@/types/api';
 
 const ServerDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [selectedTool, setSelectedTool] = useState<ToolResponse | null>(null);
+
+  useEffect(() => {
+    setSelectedTool(null);
+    setActiveTab('overview');
+  }, [id]);
 
   const { data: server, isLoading, error } = useServer(id);
   const { data: tools } = useTools(id);
@@ -177,6 +188,12 @@ const ServerDetail = () => {
                   className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none py-3 px-4"
                 >
                   Tools
+                </TabsTrigger>
+                <TabsTrigger
+                  value="execution"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none py-3 px-4"
+                >
+                  Execution
                 </TabsTrigger>
                 <TabsTrigger
                   value="resources"
@@ -362,6 +379,12 @@ const ServerDetail = () => {
                         <div
                           key={tool.id}
                           className="p-5 border rounded-lg hover:border-primary/50 cursor-pointer transition-colors"
+                          onClick={() => {
+                            if ('parameters' in tool) {
+                              setSelectedTool(tool as ToolResponse);
+                              setActiveTab('execution');
+                            }
+                          }}
                         >
                           <div className="flex justify-between">
                             <h3 className="font-medium flex items-center gap-2">
@@ -387,6 +410,59 @@ const ServerDetail = () => {
                         </div>
                       );
                     })}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            {/* Execution Tab */}
+            <TabsContent value="execution" className="m-0 py-2">
+              <div className="space-y-6">
+                {selectedTool && id ? (
+                  <ExecutionPanel
+                    serverId={id}
+                    serverName={server.name}
+                    tool={selectedTool}
+                  />
+                ) : (
+                  <div className="space-y-6">
+                    <div className="text-center border border-dashed rounded-md p-8">
+                      <Play className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                      <h3 className="text-lg font-medium mb-2">Select a Tool to Execute</h3>
+                      <p className="text-sm text-muted-foreground max-w-md mx-auto mb-4">
+                        Click on a tool in the Tools tab to execute it here, or choose one below.
+                      </p>
+                      {(tools || []).length > 0 && (
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {(tools || []).map((tool: ToolResponse) => (
+                            <Button
+                              key={tool.id}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedTool(tool);
+                              }}
+                            >
+                              <Hammer className="h-3.5 w-3.5 mr-1" />
+                              {tool.name}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {id && (
+                      <>
+                        <ExecutionMetrics serverId={id} />
+                        <Card>
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-base">All Execution History</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <ExecutionHistory serverId={id} />
+                          </CardContent>
+                        </Card>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
