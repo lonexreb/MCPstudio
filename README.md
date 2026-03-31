@@ -3,134 +3,79 @@
 
 # MCPStudio: The Postman for Model Context Protocol
 
-## Introduction
+MCPStudio is a web platform for creating, testing, managing, and discovering [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. Like Postman for APIs, MCPStudio provides a visual interface that abstracts away protocol complexity — letting you connect to MCP servers, discover tools, execute them with parameters, and inspect results, all from the browser.
 
-MCPStudio is a powerful, user-friendly platform designed to create, test, manage, and discover Model Context Protocol (MCP) servers. Similar to how Postman revolutionized API development and testing, MCPStudio provides an intuitive visual interface for interacting with MCP servers, abstracting away the underlying technical complexities of the protocol.
+**Strategic direction:** Web app (now) → CLI tool → SDK/library → Desktop app
 
-## What is Model Context Protocol (MCP)?
+## Features
 
-The Model Context Protocol is a standard that enables AI systems (like large language models) to seamlessly connect with external tools, data sources, and services. MCPStudio makes this integration process accessible to both technical and non-technical users through a visual, user-friendly interface.
+- **Server Management** — Create, configure, connect to, and monitor MCP servers with status tracking (connected / disconnected / error)
+- **Tool Discovery & Execution** — Auto-discover tools exposed by MCP servers, fill parameters via dynamic forms, and view formatted responses
+- **Authentication** — JWT-based platform auth with OAuth2 flow support for service integrations (Google Drive)
+- **Real-time Updates** — WebSocket streams for tool execution and server status changes
+- **Google Drive Integration** — Connect via OAuth, list/search/retrieve files, create folders
+- **Dark Mode** — Full dark/light theme support
 
-## Core Architecture
-
-MCPStudio follows a clean domain-driven design with:
-
-### Backend (Python/FastAPI)
-- Organized in layers: API, Application, Domain, and Infrastructure
-- Uses dependency injection (via the `container.py` file)
-- Implements MCP protocol services that can connect to various external tools
-- Has MongoDB integration for persistence
-- Provides RESTful APIs for server and tool management
-
-### Frontend (React)
-- Modern UI with components for servers, tools, and configurations
-- Interactive tool testing interface
-- Server deployment and management
-- Dashboard for monitoring server status
-
-## Key Features
-
-### Server Management
-- Create and configure MCP servers through an intuitive UI
-- Monitor server status and health in real-time (deployed, deploying, failed)
-- Organize servers with tags and collections
-- View server details and configurations
-- RESTful API endpoints for server CRUD operations
-
-### Tool Discovery and Testing
-- Visually browse tools exposed by MCP servers
-- Test tools with a parameter-driven interface
-- View formatted responses with syntax highlighting
-- Save tool executions for future reference
-
-### Authentication Management
-- OAuth flow support for service integrations
-- Secure credential storage
-- Automatic token refresh handling
-- JWT-based authentication for the platform itself
-
-### Google Drive Integration
-- Connect to Google Drive via OAuth
-- List and browse files
-- Search for content
-- Retrieve file content
-- Create folders
-
-### Real-time Collaboration
-- Share servers and tools with team members
-- Collaborate on tool testing
-- View execution history
-
-## Implementation Status
-
-### Phase 1: Backend Infrastructure (Completed)
-- ✅ MongoDB repository implementations for servers and tools
-- ✅ Event Bus for real-time updates via WebSockets
-- ✅ JWT authentication system with OAuth integration
-- ✅ Google Drive integration with OAuth flow
-- ✅ Unit tests for core functionality
-- ✅ RESTful API endpoints for server management
-- ✅ Server controller with CRUD operations
-
-### Phase 2: Frontend Development (In Progress)
-- React frontend with modern toolchain
-- Server connection management panel
-- Tool discovery and browsing interface
-- Parameter input forms for tool execution
-- Response visualization components
-- Authentication UI with OAuth flow integration
-
-### Phase 3: End-to-End Integration (Planned)
-- API clients in the frontend
-- WebSocket connections for real-time updates
-- Consistent error handling
-
-### Phase 4: Additional MCP Integrations (Planned)
-- GitHub as second integration
-- Template system for new integrations
-
-## How It Works
-
-1. Users can create and configure MCP servers through the UI
-2. MCPStudio connects to these servers using the MCP protocol
-3. It discovers available tools and presents them in a user-friendly interface
-4. Users can test tools with different parameters and view responses
-5. Servers can be deployed and their status monitored
-
-## Technology Stack
-
-### Backend
-- **Language:** Python 3.10+
-- **Framework:** FastAPI
-- **Database:** MongoDB
-- **Package Management:** UV (ultra-fast Python package manager)
-- **Authentication:** JWT + OAuth2
-- **Real-time Communication:** WebSockets
+## Tech Stack
 
 ### Frontend
-- **Framework:** React
-- **State Management:** Redux
-- **UI Components:** Tailwind CSS
-- **API Communication:** Axios
 
-## Project Structure
+| Category | Technology |
+|----------|-----------|
+| Framework | React 18 + TypeScript |
+| Build | Vite 5 + SWC |
+| State | Zustand 5 (persisted to localStorage) |
+| Data Fetching | React Query 5 |
+| UI Kit | shadcn/ui (47+ Radix-based components) |
+| Styling | Tailwind CSS 3 with custom MCP color tokens |
+| Forms | react-hook-form + Zod validation |
+| Routing | react-router-dom 6 |
+| Charts | Recharts 2 |
+| Notifications | Sonner |
+
+### Backend
+
+| Category | Technology |
+|----------|-----------|
+| Framework | FastAPI 0.109 |
+| Language | Python 3.10+ |
+| Database | MongoDB (Motor async driver) — falls back to in-memory mock |
+| Auth | JWT (python-jose) + OAuth2 (google-auth-oauthlib) |
+| DI | dependency-injector |
+| WebSockets | websockets 12 |
+| Validation | Pydantic 2 + pydantic-settings |
+| Testing | pytest + pytest-asyncio |
+
+## Architecture
+
+### Backend — Domain-Driven Design (4 layers)
 
 ```
-MCPstudio/
-├── backend/                  # Backend application
-│   └── mcp_studio_backend/   # Python package
-│       ├── src/              # Source code
-│       │   └── mcp_studio/   # Main module
-│       └── tests/            # Test suite
-└── frontend/                 # Frontend application
-    └── ai-server-forge/      # React application
-        ├── src/              # Source code
-        │   ├── components/   # React components
-        │   ├── hooks/        # Custom React hooks
-        │   ├── lib/          # Utility functions
-        │   ├── pages/        # Page components
-        │   └── types/        # TypeScript type definitions
-        └── public/           # Static assets
+backend/mcp_studio_backend/src/mcp_studio/
+├── api/              # Controllers, routes, Pydantic schemas
+├── application/      # Services, DTOs (orchestration)
+├── domain/           # Models, repository interfaces, domain services, events
+├── infrastructure/   # MongoDB repos, Google Drive client, EventBus, logging
+├── config/           # Settings (pydantic-settings, loads .env)
+├── container.py      # Dependency injection wiring
+└── main.py           # FastAPI app entry point
+```
+
+### Frontend — Feature-Sliced Architecture
+
+```
+frontend/ai-server-forge/src/
+├── features/
+│   ├── auth/         # Login page, AuthGuard, auth store, use-auth hook
+│   ├── servers/      # Dashboard, ServerDetail, ServerCard, config editors, use-servers
+│   └── tools/        # ToolEditor, ParameterEditor, CodeEditor, use-tools
+├── components/
+│   ├── layout/       # MainLayout, Header, Sidebar
+│   └── ui/           # shadcn/ui component library
+├── stores/           # Zustand stores (auth, ui, server)
+├── lib/api/          # Typed API client with auto bearer token injection
+├── hooks/            # Shared hooks (use-mobile, use-toast)
+└── types/            # TypeScript types matching backend Pydantic schemas
 ```
 
 ## Getting Started
@@ -139,69 +84,68 @@ MCPstudio/
 
 - Python 3.10+
 - Node.js 16+
-- MongoDB
-- UV package manager (optional, but recommended)
+- MongoDB (optional — falls back to in-memory mock when unavailable)
+- UV package manager (recommended)
 
 ### Installation
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/lonexreb/mcpstudio.git
-   cd mcpstudio
-   ```
+```bash
+git clone https://github.com/lonexreb/MCPstudio.git
+cd MCPstudio
+```
 
-2. Set up the backend
-   ```bash
-   cd backend/mcp_studio_backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install uv
-   uv pip install -e .
-   ```
+**Backend:**
+```bash
+cd backend/mcp_studio_backend
+python -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install uv && uv pip install -e .
+uvicorn mcp_studio.main:app --reload  # runs on :8000
+```
 
-3. Set up the frontend
-   ```bash
-   cd ../../frontend/ai-server-forge
-   npm install
-   ```
+**Frontend:**
+```bash
+cd frontend/ai-server-forge
+npm install
+npm run dev  # runs on :8080
+```
 
-4. Start the development servers
-   
-   Backend:
-   ```bash
-   cd ../../backend/mcp_studio_backend
-   uvicorn mcp_studio.main:app --reload
-   ```
-   
-   Frontend:
-   ```bash
-   cd ../../frontend/ai-server-forge
-   npm run dev
-   ```
-
-5. Open your browser and navigate to http://localhost:3000
+Open your browser at `http://localhost:8080` and log in with `admin` / `password`.
 
 ## API Endpoints
 
-### Server Management
-- `POST /api/servers` - Create a new server
-- `GET /api/servers` - List all servers
-- `GET /api/servers/{server_id}` - Get server details
-- `PUT /api/servers/{server_id}` - Update server
-- `DELETE /api/servers/{server_id}` - Delete server
-- `POST /api/servers/{server_id}/connect` - Connect to server
-- `POST /api/servers/{server_id}/disconnect` - Disconnect from server
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/auth/token` | Login (OAuth2 password flow) |
+| `GET` | `/api/auth/me` | Current user info |
+| `GET` | `/api/auth/google/auth` | Google OAuth URL |
+| `GET` | `/api/auth/google/callback` | Google OAuth callback |
+| `POST` | `/api/servers` | Create server |
+| `GET` | `/api/servers` | List servers |
+| `GET` | `/api/servers/{id}` | Get server details |
+| `PUT` | `/api/servers/{id}` | Update server |
+| `DELETE` | `/api/servers/{id}` | Delete server |
+| `POST` | `/api/servers/{id}/connect` | Connect & discover tools |
+| `POST` | `/api/servers/{id}/disconnect` | Disconnect |
+| `GET` | `/api/servers/{id}/tools` | List server tools |
+| `GET` | `/api/tools/{id}` | Get tool details |
+| `POST` | `/api/servers/{id}/tools/{id}/execute` | Execute tool |
+| `WS` | `/ws/servers/{id}/tools/{id}/execution` | Tool execution stream |
 
-### Tool Management
-- `GET /api/servers/{server_id}/tools` - List tools for a server
-- `GET /api/tools/{tool_id}` - Get tool details
-- `POST /api/servers/{server_id}/tools/{tool_id}/execute` - Execute a tool
+## Roadmap
 
-### Authentication
-- `POST /api/auth/token` - Get JWT access token
-- `GET /api/auth/google/auth` - Get Google OAuth URL
-- `GET /api/auth/google/callback` - Process Google OAuth callback
-- `GET /api/auth/me` - Get current user information
+MCPStudio follows a phased enhancement plan inspired by patterns from [Unsloth Studio](https://github.com/unslothai/unsloth):
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 0 | Foundation — Zustand stores, React Query, typed API client, auth guard | Done |
+| 1 | Feature-sliced architecture reorganization | Done |
+| 2 | UX — Server Connection Wizard, terminal-style loading, collapsible sections | Planned |
+| 3 | Real-time Execution Dashboard — SSE streaming, Recharts metrics, IndexedDB history | Planned |
+| 4 | **Visual MCP Pipeline Builder** — React Flow canvas to chain tools into DAG pipelines | Planned |
+| 5 | Tool Execution Arena — side-by-side comparison with JSON diff | Planned |
+| 6 | Config Export/Import — JSON/YAML with Zod validation | Planned |
+
+See [EXPERIMENT.md](./EXPERIMENT.md) for detailed tracking.
 
 ## Contributing
 
@@ -209,4 +153,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

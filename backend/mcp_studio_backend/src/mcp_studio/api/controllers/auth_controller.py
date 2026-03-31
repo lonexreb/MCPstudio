@@ -131,9 +131,9 @@ class AuthController:
         
         try:
             payload = jwt.decode(
-                token, 
-                settings.secret_key, 
-                algorithms=[settings.algorithm]
+                token,
+                settings.jwt_secret_key,
+                algorithms=[settings.jwt_algorithm]
             )
             username: str = payload.get("sub")
             

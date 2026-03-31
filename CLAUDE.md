@@ -25,6 +25,7 @@ npm run dev  # runs on :8080
 
 ### Prerequisites
 - Python 3.10+, Node.js 16+, MongoDB (optional — falls back to in-memory mock)
+- Default login credentials: `admin` / `password`
 
 ## Architecture
 
@@ -42,15 +43,21 @@ backend/mcp_studio_backend/src/mcp_studio/
 └── utils/            # Empty placeholders (errors, security, validation)
 
 frontend/ai-server-forge/src/
-├── pages/            # Index, NewServer, ServerDetail, NotFound
+├── features/
+│   ├── auth/         # AuthGuard, Login page, use-auth hook, auth-store
+│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard, ServerList, config editors, use-servers, server-store
+│   └── tools/        # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
 ├── components/
-│   ├── layout/       # MainLayout, Header, Sidebar
-│   ├── server/       # ServerCard, ServerList, config editors
-│   ├── tool/         # ToolEditor, CodeEditor, ParameterEditor
-│   └── ui/           # 47 shadcn/ui components
-├── types/mcp.ts      # TypeScript domain models + sample data
-├── hooks/            # use-mobile, use-toast
-└── lib/utils.ts      # cn() classname helper
+│   ├── layout/       # MainLayout, Header, Sidebar (shared)
+│   └── ui/           # 47 shadcn/ui components (shared)
+├── stores/           # ui-store (global UI state, Zustand + persist)
+├── hooks/            # use-mobile, use-toast (shared utilities)
+├── lib/
+│   ├── api/          # Typed API client (client, servers, tools, auth)
+│   └── utils.ts      # cn() classname helper
+├── types/
+│   ├── api.ts        # TypeScript types matching backend Pydantic schemas
+│   └── mcp.ts        # Frontend domain models (legacy, for reference)
 ```
 
 ## Key Conventions
@@ -59,30 +66,26 @@ frontend/ai-server-forge/src/
 - **Routes → Controllers → Services → Repositories**: Each layer has clear responsibility
 - **Pydantic schemas** for API request/response validation (`api/schemas/`)
 - **Pydantic-settings** for config — loads from `.env` file
+- **Frontend state**: Zustand stores with `persist` middleware (localStorage)
+- **Frontend data fetching**: React Query hooks wrapping typed API client (`lib/api/`)
 - **Frontend UI**: shadcn/ui components (Radix primitives + Tailwind)
+- **Auth flow**: JWT tokens stored in Zustand auth store; AuthGuard redirects to `/login`; API client auto-injects bearer token
 - **Styling**: Tailwind CSS with custom `mcp.blue` (#2563eb), `mcp.purple` (#7c3aed), `mcp.teal` (#0d9488) color tokens
 - **Path alias**: `@/` maps to `frontend/ai-server-forge/src/`
 
 ## Known Issues
 
-### Settings key mismatch (will crash at runtime)
-Code uses `settings.secret_key` / `settings.algorithm` but settings.py defines `jwt_secret_key` / `jwt_algorithm`.
-- Files: `application/services/auth_service.py`, `api/controllers/auth_controller.py`
-
 ### Hardcoded auth credentials
-`auth_controller.py` has hardcoded `admin/password` for MVP login.
-
-### Frontend not connected to backend
-- No API client exists — all data is mock/sample data from `types/mcp.ts`
-- React Query installed but unused
-- `setTimeout` used to simulate API calls
-- Placeholder routes (/tools, /resources, /prompts, /docs, /support, /settings) all point to Index
+`auth_controller.py` has hardcoded `admin/password` for MVP login. No real user database.
 
 ### Circular dependency workaround
 `ServerService` ↔ `ToolService` circular reference resolved in `container.py` via `.with_tool_service()` / `.with_server_service()` post-init methods.
 
 ### MongoDB optional
 When MongoDB unavailable, `MockCollection` in `infrastructure/database/connection.py` provides in-memory fallback. Data not persisted.
+
+### Placeholder routes
+`/tools`, `/resources`, `/prompts`, `/docs`, `/support`, `/settings` routes still point to Index page.
 
 ## Testing
 
@@ -117,5 +120,7 @@ pytest tests/unit/        # unit tests only
 - **DI container**: `backend/mcp_studio_backend/src/mcp_studio/container.py`
 - **Settings**: `backend/mcp_studio_backend/src/mcp_studio/config/settings.py`
 - **Frontend app**: `frontend/ai-server-forge/src/App.tsx`
-- **Domain types**: `frontend/ai-server-forge/src/types/mcp.ts`
+- **API types**: `frontend/ai-server-forge/src/types/api.ts`
+- **API client**: `frontend/ai-server-forge/src/lib/api/client.ts`
+- **Auth store**: `frontend/ai-server-forge/src/stores/auth-store.ts`
 - **Tailwind config**: `frontend/ai-server-forge/tailwind.config.ts`
