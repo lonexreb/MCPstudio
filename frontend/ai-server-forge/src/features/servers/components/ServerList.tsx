@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ServerResponse } from '@/types/api';
 import ServerCard from './ServerCard';
+import ConfigImport from './ConfigImport';
 
 interface ServerListProps {
   servers: ServerResponse[];
@@ -21,10 +22,13 @@ const ServerList = ({ servers }: ServerListProps) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Your MCP Servers</h2>
-        <Button onClick={handleNewServer}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Server
-        </Button>
+        <div className="flex items-center gap-2">
+          <ConfigImport />
+          <Button onClick={handleNewServer}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Server
+          </Button>
+        </div>
       </div>
 
       {servers.length === 0 ? (
