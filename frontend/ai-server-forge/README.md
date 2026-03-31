@@ -26,7 +26,8 @@ Default login: `admin` / `password` (hardcoded MVP credentials — backend requi
 src/
 ├── features/
 │   ├── auth/         # AuthGuard, Login page, use-auth hook, auth-store
-│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard
+│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard,
+│   │                 # ConfigExport, ConfigImport, config-serializer (JSON/YAML)
 │   ├── tools/        # ToolEditor, CodeEditor, ParameterEditor
 │   ├── pipeline/     # PipelineList, PipelineEditor, React Flow canvas, nodes
 │   └── execution/    # Arena (side-by-side tool comparison), ExecutionHistory,

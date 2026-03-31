@@ -2,7 +2,7 @@
 
 ## Backend
 
-> **Frontend phases shipped**: Phase 0 (API client + Zustand) → Phase 3 (Execution dashboard) → Phase 4 (Pipeline builder) → Phase 5 (Execution Arena)
+> **Frontend phases shipped**: Phase 0 (API client + Zustand) → Phase 3 (Execution dashboard) → Phase 4 (Pipeline builder) → Phase 5 (Execution Arena) → Phase 6 (Config export/import)
 
 ## Introduction
 
