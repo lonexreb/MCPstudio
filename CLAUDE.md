@@ -45,11 +45,18 @@ backend/mcp_studio_backend/src/mcp_studio/
 frontend/ai-server-forge/src/
 ├── features/
 │   ├── auth/         # AuthGuard, Login page, use-auth hook, auth-store
-│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard, ServerList, config editors, use-servers, server-store
-│   └── tools/        # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
+│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard, ServerList,
+│   │                 # ConfigExport, ConfigImport, config-serializer, use-servers, server-store
+│   ├── tools/        # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
+│   ├── pipeline/     # PipelineList, PipelineEditor, PipelineCanvas, nodes (Input/Output/Tool),
+│   │                 # PipelineSidebar, PipelineToolbar, pipeline-store, use-pipeline-db,
+│   │                 # auto-layout, pipeline-engine, pipeline types
+│   └── execution/    # Arena (side-by-side comparison), ArenaPanel, ComparisonView,
+│                     # ExecutionHistory, ExecutionMetrics, ExecutionPanel, ExecutionResult,
+│                     # ParameterForm, execution-store, use-execution-history, db
 ├── components/
 │   ├── layout/       # MainLayout, Header, Sidebar (shared)
-│   └── ui/           # 47 shadcn/ui components (shared)
+│   └── ui/           # 47+ shadcn/ui components incl. Resizable (shared)
 ├── stores/           # ui-store (global UI state, Zustand + persist)
 ├── hooks/            # use-mobile, use-toast (shared utilities)
 ├── lib/
@@ -59,6 +66,19 @@ frontend/ai-server-forge/src/
 │   ├── api.ts        # TypeScript types matching backend Pydantic schemas
 │   └── mcp.ts        # Frontend domain models (legacy, for reference)
 ```
+
+### Active Routes
+
+| Path | Feature | Notes |
+|------|---------|-------|
+| `/` | servers | Dashboard |
+| `/new-server` | servers | Create server |
+| `/server/:id` | servers | Detail + tool testing + config export/import |
+| `/pipelines` | pipeline | List pipelines |
+| `/pipelines/new` | pipeline | Build pipeline |
+| `/pipelines/:id` | pipeline | Edit pipeline |
+| `/arena` | execution | Side-by-side tool comparison |
+| `/tools`, `/resources`, `/prompts`, `/docs`, `/support`, `/settings` | — | Still placeholder (→ Dashboard) |
 
 ## Key Conventions
 
@@ -85,7 +105,7 @@ frontend/ai-server-forge/src/
 When MongoDB unavailable, `MockCollection` in `infrastructure/database/connection.py` provides in-memory fallback. Data not persisted.
 
 ### Placeholder routes
-`/tools`, `/resources`, `/prompts`, `/docs`, `/support`, `/settings` routes still point to Index page.
+`/tools`, `/resources`, `/prompts`, `/docs`, `/support`, `/settings` still redirect to the Dashboard. `/pipelines` and `/arena` are fully implemented.
 
 ## Testing
 
