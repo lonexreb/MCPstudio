@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useServer, useConnectServer, useDisconnectServer, useUpdateServer } from '@/features/servers/hooks/use-servers';
 import { useTools } from '@/features/tools/hooks/use-tools';
 import type { ToolResponse, ToolReference } from '@/types/api';
@@ -203,118 +204,117 @@ const ServerDetail = () => {
             {/* Overview Tab */}
             <TabsContent value="overview" className="m-0 py-2">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 space-y-6">
-                  <div className="border rounded-lg p-6 space-y-4">
-                    <h3 className="text-xl font-semibold">Server Details</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-sm text-muted-foreground">Name:</span>
-                        <p>{server.name}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Description:</span>
-                        <p>{server.description || 'No description'}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Connection URL:</span>
-                        <p className="font-mono text-sm bg-muted p-2 rounded mt-1">
-                          {server.connection_url}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Created:</span>
-                        <p>{new Date(server.created_at).toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Last Updated:</span>
-                        <p>{new Date(server.updated_at).toLocaleString()}</p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="md:col-span-2">
+                  <Accordion type="multiple" defaultValue={['tools', 'connection']}>
+                    <AccordionItem value="details" className="border rounded-lg px-6 mb-4">
+                      <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        Server Details
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-2 pb-4">
+                        <div>
+                          <span className="text-sm text-muted-foreground">Name:</span>
+                          <p>{server.name}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-muted-foreground">Description:</span>
+                          <p>{server.description || 'No description'}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-muted-foreground">Connection URL:</span>
+                          <p className="font-mono text-sm bg-muted p-2 rounded mt-1">{server.connection_url}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-muted-foreground">Created:</span>
+                          <p>{new Date(server.created_at).toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-muted-foreground">Last Updated:</span>
+                          <p>{new Date(server.updated_at).toLocaleString()}</p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
 
-                  <div className="border rounded-lg p-6 space-y-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-semibold">Tools</h3>
-                      {server.status !== 'connected' && (
-                        <Button variant="outline" size="sm" onClick={handleConnect}>
-                          <PlugZap className="h-4 w-4 mr-1" /> Connect to Discover
-                        </Button>
-                      )}
-                    </div>
-
-                    {serverTools.length === 0 ? (
-                      <div className="text-center border border-dashed rounded-md p-6">
-                        <Wrench className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
-                        <h4 className="font-medium mb-1">No Tools Discovered</h4>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Connect to the server to discover available tools
-                        </p>
-                        <Button onClick={handleConnect} disabled={connectServer.isPending}>
-                          <PlugZap className="h-4 w-4 mr-1" /> Connect & Discover
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {serverTools.map((tool) => (
-                          <div
-                            key={tool.id}
-                            className="p-4 border rounded-md flex justify-between items-start hover:border-primary/50 cursor-pointer"
-                            onClick={() => setActiveTab('tools')}
-                          >
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <Hammer className="h-4 w-4 text-primary" />
-                                <h4 className="font-medium">{tool.name}</h4>
-                              </div>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {tool.description}
-                              </p>
-                            </div>
+                    <AccordionItem value="tools" className="border rounded-lg px-6 mb-4">
+                      <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          Tools
+                          <Badge variant="outline" className="font-normal">{serverTools.length}</Badge>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pb-4">
+                        {serverTools.length === 0 ? (
+                          <div className="text-center border border-dashed rounded-md p-6">
+                            <Wrench className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+                            <h4 className="font-medium mb-1">No Tools Discovered</h4>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Connect to the server to discover available tools
+                            </p>
+                            <Button onClick={handleConnect} disabled={connectServer.isPending}>
+                              <PlugZap className="h-4 w-4 mr-1" /> Connect & Discover
+                            </Button>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {serverTools.map((tool) => (
+                              <div
+                                key={tool.id}
+                                className="p-4 border rounded-md flex justify-between items-start hover:border-primary/50 cursor-pointer"
+                                onClick={() => setActiveTab('tools')}
+                              >
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <Hammer className="h-4 w-4 text-primary" />
+                                    <h4 className="font-medium">{tool.name}</h4>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mt-1">{tool.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="border rounded-lg p-6 space-y-4">
-                    <h3 className="text-lg font-semibold">Connection</h3>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-sm text-muted-foreground">Status:</span>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className={`h-2.5 w-2.5 rounded-full ${getStatusColor()}`} />
-                          <span>{getStatusText()}</span>
+                <div>
+                  <Accordion type="multiple" defaultValue={['connection']}>
+                    <AccordionItem value="connection" className="border rounded-lg px-6 mb-4">
+                      <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        Connection
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-2 pb-4">
+                        <div>
+                          <span className="text-sm text-muted-foreground">Status:</span>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className={`h-2.5 w-2.5 rounded-full ${getStatusColor()}`} />
+                            <span>{getStatusText()}</span>
+                          </div>
                         </div>
-                      </div>
-                      <div className="pt-2">
-                        <span className="text-sm text-muted-foreground">URL:</span>
-                        <p className="font-mono text-sm mt-1 bg-muted p-2 rounded break-all">
-                          {server.connection_url}
-                        </p>
-                      </div>
-                      <div className="pt-2">
-                        {getConnectButton()}
-                      </div>
-                    </div>
-                  </div>
+                        <div className="pt-2">
+                          <span className="text-sm text-muted-foreground">URL:</span>
+                          <p className="font-mono text-sm mt-1 bg-muted p-2 rounded break-all">{server.connection_url}</p>
+                        </div>
+                        <div className="pt-2">{getConnectButton()}</div>
+                      </AccordionContent>
+                    </AccordionItem>
 
-                  <div className="border rounded-lg p-6 space-y-4">
-                    <h3 className="text-lg font-semibold">Authentication</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <span className="text-sm text-muted-foreground">Type:</span>
-                        <p className="mt-1 capitalize">{server.auth_config?.type || 'None'}</p>
-                      </div>
-                      <div className="pt-1">
+                    <AccordionItem value="auth" className="border rounded-lg px-6 mb-4">
+                      <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                        Authentication
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-3 pb-4">
+                        <div>
+                          <span className="text-sm text-muted-foreground">Type:</span>
+                          <p className="mt-1 capitalize">{server.auth_config?.type || 'None'}</p>
+                        </div>
                         <Button variant="outline" size="sm" onClick={() => setActiveTab('config')}>
                           <Settings className="h-4 w-4 mr-1" />
                           Edit Configuration
                         </Button>
-                      </div>
-                    </div>
-                  </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
               </div>
             </TabsContent>
@@ -449,34 +449,47 @@ const ServerDetail = () => {
                   </div>
                 </div>
 
-                <div className="border rounded-lg p-6 space-y-4">
-                  <h3 className="text-lg font-semibold">Connection</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <span className="text-sm text-muted-foreground">URL:</span>
-                      <p className="font-mono text-sm mt-1 bg-muted p-2 rounded break-all">
-                        {server.connection_url}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border rounded-lg p-6 space-y-4">
-                  <h3 className="text-lg font-semibold">Authentication</h3>
-                  {server.auth_config ? (
-                    <div className="space-y-2">
+                <Accordion type="multiple" defaultValue={['config-connection', 'config-auth']}>
+                  <AccordionItem value="config-connection" className="border rounded-lg px-6 mb-4">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                      Connection
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-2 pb-4">
                       <div>
-                        <span className="text-sm text-muted-foreground">Type:</span>
-                        <p className="mt-1 capitalize">{server.auth_config.type}</p>
+                        <span className="text-sm text-muted-foreground">URL:</span>
+                        <p className="font-mono text-sm mt-1 bg-muted p-2 rounded break-all">{server.connection_url}</p>
                       </div>
-                      <pre className="bg-muted rounded p-3 text-sm overflow-x-auto">
-                        {JSON.stringify(server.auth_config, null, 2)}
-                      </pre>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No authentication configured</p>
-                  )}
-                </div>
+                      <div className="pt-2">
+                        <span className="text-sm text-muted-foreground">Status:</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className={`h-2.5 w-2.5 rounded-full ${getStatusColor()}`} />
+                          <span>{getStatusText()}</span>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="config-auth" className="border rounded-lg px-6 mb-4">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                      Authentication
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-2 pb-4">
+                      {server.auth_config ? (
+                        <>
+                          <div>
+                            <span className="text-sm text-muted-foreground">Type:</span>
+                            <p className="mt-1 capitalize">{server.auth_config.type}</p>
+                          </div>
+                          <pre className="bg-muted rounded p-3 text-sm overflow-x-auto">
+                            {JSON.stringify(server.auth_config, null, 2)}
+                          </pre>
+                        </>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No authentication configured</p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </TabsContent>
           </div>
