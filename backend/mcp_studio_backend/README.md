@@ -2,6 +2,8 @@
 
 ## Backend
 
+> **Frontend phases shipped**: Phase 0 (API client + Zustand) → Phase 3 (Execution dashboard) → Phase 4 (Pipeline builder) → Phase 5 (Execution Arena)
+
 ## Introduction
 
 MCPStudio is a powerful, user-friendly platform designed to create, test, manage, and discover Model Context Protocol (MCP) servers. Similar to how Postman revolutionized API development and testing, MCPStudio provides an intuitive visual interface for interacting with MCP servers, abstracting away the underlying technical complexities of the protocol.

@@ -1,73 +1,68 @@
-# Welcome to your Lovable project
+# MCPStudio Frontend — ai-server-forge
 
-## Project info
+The frontend for MCPStudio: "The Postman for Model Context Protocol". A visual interface for creating, testing, and managing MCP servers.
 
-**URL**: https://lovable.dev/projects/e23bce66-ed67-4e91-a172-1c938f7830b3
+## Tech Stack
 
-## How can I edit this code?
+- **Vite** + **TypeScript** + **React**
+- **shadcn/ui** (Radix primitives + Tailwind CSS)
+- **Zustand** for client state (auth, UI)
+- **React Query** for server state / data fetching
+- **React Router v6** for routing
+- **React Flow** for pipeline canvas
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/e23bce66-ed67-4e91-a172-1c938f7830b3) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Getting Started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm install
+npm run dev   # runs on http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+Default login: `admin` / `password` (hardcoded MVP credentials — backend required at `http://localhost:8000`)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Project Structure
 
-**Use GitHub Codespaces**
+```
+src/
+├── features/
+│   ├── auth/         # AuthGuard, Login page, use-auth hook, auth-store
+│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard
+│   ├── tools/        # ToolEditor, CodeEditor, ParameterEditor
+│   ├── pipeline/     # PipelineList, PipelineEditor, React Flow canvas, nodes
+│   └── execution/    # Arena (side-by-side tool comparison), ExecutionHistory,
+│                     # ExecutionMetrics, ParameterForm, ExecutionResult
+├── components/
+│   ├── layout/       # MainLayout, Header, Sidebar
+│   └── ui/           # 47 shadcn/ui components (including Resizable)
+├── stores/           # Zustand stores (auth-store, ui-store)
+├── lib/
+│   ├── api/          # Typed API client (client, servers, tools, auth)
+│   └── utils.ts      # cn() classname helper
+└── types/
+    ├── api.ts        # TypeScript types matching backend Pydantic schemas
+    └── mcp.ts        # Frontend domain models
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Routes
 
-## What technologies are used for this project?
+| Path | Feature | Description |
+|------|---------|-------------|
+| `/` | servers | Dashboard — list of MCP servers |
+| `/new-server` | servers | Create a new MCP server |
+| `/server/:id` | servers | Server detail + tool testing |
+| `/pipelines` | pipeline | List saved pipelines |
+| `/pipelines/new` | pipeline | Build a new pipeline |
+| `/pipelines/:id` | pipeline | Edit an existing pipeline |
+| `/arena` | execution | Side-by-side tool execution comparison |
 
-This project is built with:
+## Key Conventions
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **State**: Zustand stores with `persist` middleware (localStorage)
+- **Data fetching**: React Query hooks wrapping typed API client (`lib/api/`)
+- **Auth**: JWT stored in auth-store; `AuthGuard` redirects unauthenticated users to `/login`; API client auto-injects bearer token
+- **Styling**: Tailwind with custom color tokens — `mcp.blue` (#2563eb), `mcp.purple` (#7c3aed), `mcp.teal` (#0d9488)
+- **Path alias**: `@/` → `src/`
 
-## How can I deploy this project?
+## Backend
 
-Simply open [Lovable](https://lovable.dev/projects/e23bce66-ed67-4e91-a172-1c938f7830b3) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Expects the backend running at `http://localhost:8000`. See `../../backend/mcp_studio_backend/README.md` for setup instructions.
