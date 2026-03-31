@@ -43,15 +43,15 @@ backend/mcp_studio_backend/src/mcp_studio/
 └── utils/            # Empty placeholders (errors, security, validation)
 
 frontend/ai-server-forge/src/
-├── pages/            # Login, Index, NewServer, ServerDetail, NotFound
+├── features/
+│   ├── auth/         # AuthGuard, Login page, use-auth hook, auth-store
+│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard, ServerList, config editors, use-servers, server-store
+│   └── tools/        # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
 ├── components/
-│   ├── auth/         # AuthGuard (route protection)
-│   ├── layout/       # MainLayout, Header, Sidebar
-│   ├── server/       # ServerCard, ServerList, config editors
-│   ├── tool/         # ToolEditor, CodeEditor, ParameterEditor
-│   └── ui/           # 47 shadcn/ui components
-├── stores/           # Zustand stores (auth, server, ui) with localStorage persistence
-├── hooks/            # use-servers, use-tools, use-auth, use-mobile, use-toast
+│   ├── layout/       # MainLayout, Header, Sidebar (shared)
+│   └── ui/           # 47 shadcn/ui components (shared)
+├── stores/           # ui-store (global UI state, Zustand + persist)
+├── hooks/            # use-mobile, use-toast (shared utilities)
 ├── lib/
 │   ├── api/          # Typed API client (client, servers, tools, auth)
 │   └── utils.ts      # cn() classname helper
