@@ -12,6 +12,7 @@ import ServerDetail from "@/features/servers/pages/ServerDetail";
 import NotFound from "./pages/NotFound";
 import PipelineList from "@/features/pipeline/pages/PipelineList";
 import PipelineEditor from "@/features/pipeline/pages/PipelineEditor";
+import Arena from "@/features/execution/pages/Arena";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/pipelines" element={<AuthGuard><PipelineList /></AuthGuard>} />
           <Route path="/pipelines/new" element={<AuthGuard><PipelineEditor /></AuthGuard>} />
           <Route path="/pipelines/:id" element={<AuthGuard><PipelineEditor /></AuthGuard>} />
+          <Route path="/arena" element={<AuthGuard><Arena /></AuthGuard>} />
           <Route path="/tools" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/resources" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/prompts" element={<AuthGuard><Dashboard /></AuthGuard>} />
