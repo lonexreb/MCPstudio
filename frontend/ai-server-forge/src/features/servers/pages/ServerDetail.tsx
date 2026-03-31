@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -34,6 +34,11 @@ const ServerDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedTool, setSelectedTool] = useState<ToolResponse | null>(null);
+
+  useEffect(() => {
+    setSelectedTool(null);
+    setActiveTab('overview');
+  }, [id]);
 
   const { data: server, isLoading, error } = useServer(id);
   const { data: tools } = useTools(id);

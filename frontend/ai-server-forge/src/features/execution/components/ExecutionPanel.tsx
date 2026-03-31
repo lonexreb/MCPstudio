@@ -80,9 +80,9 @@ const ExecutionPanel = ({ serverId, serverName, tool }: ExecutionPanelProps) => 
       });
 
       toast.error(`Execution failed: ${err.message}`);
+    } finally {
+      setIsExecuting(false);
     }
-
-    setIsExecuting(false);
   };
 
   const handleReset = () => {

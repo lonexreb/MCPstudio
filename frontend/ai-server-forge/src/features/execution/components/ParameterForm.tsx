@@ -60,7 +60,7 @@ const ParameterForm = ({ parameters, values, onChange }: ParameterFormProps) => 
                 id={key}
                 type="number"
                 value={values[key] ?? ''}
-                onChange={(e) => handleChange(key, e.target.value ? Number(e.target.value) : '')}
+                onChange={(e) => handleChange(key, e.target.value ? Number(e.target.value) : undefined)}
                 placeholder={description || `Enter ${key}`}
               />
             ) : fieldType === 'object' ? (
