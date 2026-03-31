@@ -27,6 +27,7 @@ import { useTools } from '@/features/tools/hooks/use-tools';
 import ExecutionPanel from '@/features/execution/components/ExecutionPanel';
 import ExecutionMetrics from '@/features/execution/components/ExecutionMetrics';
 import ExecutionHistory from '@/features/execution/components/ExecutionHistory';
+import ConfigExport from '@/features/servers/components/ConfigExport';
 import type { ToolResponse, ToolReference } from '@/types/api';
 
 const ServerDetail = () => {
@@ -169,6 +170,7 @@ const ServerDetail = () => {
               <div className={`h-2.5 w-2.5 rounded-full ${getStatusColor()}`} />
               <span className="text-sm">{getStatusText()}</span>
             </div>
+            <ConfigExport server={server} tools={(tools || []) as ToolResponse[]} />
             {getConnectButton()}
           </div>
         </div>
