@@ -33,10 +33,10 @@ MCPStudio is being enhanced with patterns from [Unsloth Studio](https://github.c
 - [x] Move pages, components, hooks, stores into feature modules
 - [x] Update all imports in App.tsx
 
-### Phase 2: UX Improvements
-- [ ] Server Connection Wizard (5-step)
-- [ ] Terminal-style animated loading component
-- [ ] Progressive disclosure in ServerDetail (collapsible sections)
+### Phase 2: UX Improvements (COMPLETE)
+- [x] Server Connection Wizard (5-step: Info → Connection → Auth → Discover → Confirm)
+- [x] Terminal-style animated loading component (terminal-animation.tsx)
+- [x] Progressive disclosure in ServerDetail (Accordion collapsible sections)
 
 ### Phase 3: Real-Time Execution Dashboard
 - [ ] SSE endpoint on backend for streaming execution
