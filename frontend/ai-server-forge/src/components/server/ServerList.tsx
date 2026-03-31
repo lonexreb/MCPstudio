@@ -3,20 +3,20 @@ import React from 'react';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { MCPServer } from '@/types/mcp';
+import { ServerResponse } from '@/types/api';
 import ServerCard from './ServerCard';
 
 interface ServerListProps {
-  servers: MCPServer[];
+  servers: ServerResponse[];
 }
 
 const ServerList = ({ servers }: ServerListProps) => {
   const navigate = useNavigate();
-  
+
   const handleNewServer = () => {
     navigate('/new-server');
   };
-  
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -26,7 +26,7 @@ const ServerList = ({ servers }: ServerListProps) => {
           New Server
         </Button>
       </div>
-      
+
       {servers.length === 0 ? (
         <div className="border border-dashed rounded-md p-8 text-center">
           <h3 className="text-lg font-medium mb-2">No servers yet</h3>

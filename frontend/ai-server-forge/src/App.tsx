@@ -9,7 +9,15 @@ import NewServer from "./pages/NewServer";
 import ServerDetail from "./pages/ServerDetail";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,7 +29,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/new-server" element={<NewServer />} />
           <Route path="/server/:id" element={<ServerDetail />} />
-          <Route path="/tools" element={<Index />} /> {/* Placeholder routes */}
+          <Route path="/tools" element={<Index />} />
           <Route path="/resources" element={<Index />} />
           <Route path="/prompts" element={<Index />} />
           <Route path="/docs" element={<Index />} />

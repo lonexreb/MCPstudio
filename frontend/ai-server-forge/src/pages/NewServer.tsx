@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
   Plus,
   ArrowLeft,
-  Check,
   Server,
   Wrench,
   Database,
@@ -16,37 +15,45 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { createNewServer } from '@/types/mcp';
+import { useCreateServer } from '@/hooks/use-servers';
 
 const NewServer = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [connectionUrl, setConnectionUrl] = useState('');
+
+  const createServer = useCreateServer();
+
   const handleBack = () => {
     navigate('/');
   };
-  
+
   const handleCreate = () => {
     if (!name) {
       toast.error("Please provide a server name");
       return;
     }
-    
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const newServer = createNewServer();
-      newServer.name = name;
-      newServer.description = description;
-      
-      toast.success("MCP server created successfully");
-      navigate(`/server/${newServer.id}`);
-    }, 1000);
+
+    if (!connectionUrl) {
+      toast.error("Please provide a connection URL");
+      return;
+    }
+
+    createServer.mutate(
+      { name, description, connection_url: connectionUrl },
+      {
+        onSuccess: (server) => {
+          toast.success("MCP server created successfully");
+          navigate(`/server/${server.id}`);
+        },
+        onError: (error) => {
+          toast.error(error.message || "Failed to create server");
+        },
+      }
+    );
   };
-  
+
   return (
     <MainLayout title="Create New MCP Server">
       <div className="max-w-3xl mx-auto space-y-8">
@@ -56,7 +63,7 @@ const NewServer = () => {
             Back to Dashboard
           </Button>
         </div>
-        
+
         <Card className="border-2 shadow-sm">
           <CardHeader>
             <CardTitle className="text-2xl">Create New MCP Server</CardTitle>
@@ -64,39 +71,49 @@ const NewServer = () => {
               Set up a new Model Context Protocol server to expose capabilities to AI agents
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Server Name</Label>
-              <Input 
-                id="name" 
+              <Input
+                id="name"
                 placeholder="Enter a name for your server"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Textarea 
-                id="description" 
+              <Textarea
+                id="description"
                 placeholder="Describe the purpose of this MCP server"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={4}
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="connectionUrl">Connection URL</Label>
+              <Input
+                id="connectionUrl"
+                placeholder="e.g., googledrive://default, https://my-mcp-server.com"
+                value={connectionUrl}
+                onChange={(e) => setConnectionUrl(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                A clear description helps users understand what capabilities this server provides
+                The URL or protocol scheme used to connect to this MCP server
               </p>
             </div>
           </CardContent>
-          
+
           <CardFooter className="flex justify-between border-t p-6 bg-muted/30">
             <Button variant="outline" onClick={handleBack}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={isSubmitting}>
-              {isSubmitting ? (
+            <Button onClick={handleCreate} disabled={createServer.isPending}>
+              {createServer.isPending ? (
                 <span className="flex items-center">
-                  Creating... <span className="ml-2 animate-spin">⏳</span>
+                  Creating... <span className="ml-2 animate-spin">&#8987;</span>
                 </span>
               ) : (
                 <>
@@ -107,7 +124,7 @@ const NewServer = () => {
             </Button>
           </CardFooter>
         </Card>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="hover:bg-accent/5 transition-colors">
             <CardHeader className="flex flex-row items-start space-x-2">
@@ -123,7 +140,7 @@ const NewServer = () => {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card className="hover:bg-accent/5 transition-colors">
             <CardHeader className="flex flex-row items-start space-x-2">
               <Database className="h-6 w-6 text-primary mt-1" />
@@ -138,7 +155,7 @@ const NewServer = () => {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card className="hover:bg-accent/5 transition-colors">
             <CardHeader className="flex flex-row items-start space-x-2">
               <Settings className="h-6 w-6 text-primary mt-1" />
@@ -153,7 +170,7 @@ const NewServer = () => {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card className="hover:bg-accent/5 transition-colors">
             <CardHeader className="flex flex-row items-start space-x-2">
               <Server className="h-6 w-6 text-primary mt-1" />
