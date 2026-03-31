@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 interface ServerStore {
   selectedServerId: string | null;
   setSelectedServer: (id: string | null) => void;
+  reset: () => void;
 }
 
 export const useServerStore = create<ServerStore>()(
@@ -11,6 +12,7 @@ export const useServerStore = create<ServerStore>()(
     (set) => ({
       selectedServerId: null,
       setSelectedServer: (id) => set({ selectedServerId: id }),
+      reset: () => set({ selectedServerId: null }),
     }),
     { name: 'mcp-server' }
   )

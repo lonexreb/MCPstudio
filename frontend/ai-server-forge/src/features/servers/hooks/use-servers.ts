@@ -61,6 +61,7 @@ export function useConnectServer() {
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['servers'] });
       queryClient.invalidateQueries({ queryKey: ['servers', id] });
+      queryClient.invalidateQueries({ queryKey: ['tools', id] });
     },
   });
 }
@@ -73,6 +74,7 @@ export function useDisconnectServer() {
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['servers'] });
       queryClient.invalidateQueries({ queryKey: ['servers', id] });
+      queryClient.invalidateQueries({ queryKey: ['tools', id] });
     },
   });
 }

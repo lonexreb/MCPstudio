@@ -95,7 +95,15 @@ const ServerCard = ({ server }: ServerCardProps) => {
             Live
           </Badge>
         ) : (
-          <Button size="sm" variant="outline" className="h-7 text-xs">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/server/${server.id}`);
+            }}
+          >
             Connect
           </Button>
         )}
