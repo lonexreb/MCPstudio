@@ -6,11 +6,13 @@ export function useLogin() {
   const { login } = useAuthStore();
 
   return useMutation({
-    mutationFn: ({ username, password }: { username: string; password: string }) =>
-      authApi.login(username, password),
-    onSuccess: async (data) => {
-      const user = await authApi.getCurrentUser(data.access_token);
-      login(data.access_token, user);
+    mutationFn: async ({ username, password }: { username: string; password: string }) => {
+      const tokenResponse = await authApi.login(username, password);
+      const user = await authApi.getCurrentUser(tokenResponse.access_token);
+      return { token: tokenResponse.access_token, user };
+    },
+    onSuccess: (data) => {
+      login(data.token, data.user);
     },
   });
 }

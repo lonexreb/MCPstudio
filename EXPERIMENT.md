@@ -71,6 +71,6 @@ MCPStudio is being enhanced with patterns from [Unsloth Studio](https://github.c
 
 ## PR History
 
-| PR | Title | Status |
-|----|-------|--------|
-| [#1](https://github.com/lonexreb/MCPstudio/pull/1) | Phase 0 - Connect frontend to backend with Zustand & React Query | Open |
+| PR | Title |
+|----|-------|
+| [#1](https://github.com/lonexreb/MCPstudio/pull/1) | Phase 0 - Connect frontend to backend with Zustand & React Query |
