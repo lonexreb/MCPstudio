@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import ValidationError
 
-from mcp_studio.api.schemas.auth_schema import TokenResponse, GoogleAuthResponse
+from mcp_studio.api.schemas.auth_schema import TokenResponse, GoogleAuthResponse, RegisterRequest
 from mcp_studio.application.services.auth_service import AuthService
 from mcp_studio.config.settings import settings
 from mcp_studio.domain.models.server import Server
@@ -18,9 +18,12 @@ logger = logging.getLogger(__name__)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 
+_users_db: Dict[str, str] = {}  # username -> hashed_password
+
+
 class AuthController:
     """Controller for authentication-related endpoints."""
-    
+
     def __init__(
         self,
         auth_service: AuthService,
@@ -29,20 +32,38 @@ class AuthController:
         self.auth_service = auth_service
         self.server_repository = server_repository
     
+    async def register(self, data: RegisterRequest) -> TokenResponse:
+        """Register a new user."""
+        if data.username in _users_db:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already exists",
+            )
+
+        _users_db[data.username] = self.auth_service.get_password_hash(data.password)
+        logger.info(f"User registered: {data.username}")
+
+        access_token = self.auth_service.create_access_token(
+            data={"sub": data.username}
+        )
+        return TokenResponse(access_token=access_token, token_type="bearer")
+
     async def login(self, form_data: OAuth2PasswordRequestForm) -> TokenResponse:
         """
         Authenticate a user with username and password.
-        
-        Args:
-            form_data: Form containing username and password
-            
-        Returns:
-            Access token and token type
         """
-        # For MVP, we'll use a simple hardcoded authentication
-        # In a real application, you would verify against a user database
-        if form_data.username != "admin" or not self.auth_service.verify_password(form_data.password, 
-                                                                                   self.auth_service.get_password_hash("password")):
+        # Check registered users first
+        if form_data.username in _users_db:
+            if not self.auth_service.verify_password(form_data.password, _users_db[form_data.username]):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect username or password",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        # Fallback to hardcoded admin/password for backward compat
+        elif form_data.username != "admin" or not self.auth_service.verify_password(
+            form_data.password, self.auth_service.get_password_hash("password")
+        ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",

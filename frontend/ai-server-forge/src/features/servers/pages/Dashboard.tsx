@@ -26,7 +26,7 @@ const Index = () => {
         <div className="border border-destructive/50 rounded-md p-8 text-center">
           <h3 className="text-lg font-medium mb-2 text-destructive">Failed to load servers</h3>
           <p className="text-sm text-muted-foreground">
-            Make sure the backend is running on port 8000
+            Make sure the backend is running. Check the console for details.
           </p>
         </div>
       ) : (

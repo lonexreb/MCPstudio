@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useServerStore } from '@/features/servers/stores/server-store';
+import { supabase } from '@/lib/supabase';
 
 interface User {
   id: string;
   username: string;
+  email?: string;
 }
 
 interface AuthStore {
@@ -25,6 +27,7 @@ export const useAuthStore = create<AuthStore>()(
       login: (token, user) =>
         set({ token, user, isAuthenticated: true }),
       logout: () => {
+        supabase.auth.signOut();
         set({ token: null, user: null, isAuthenticated: false });
         useServerStore.getState().reset();
       },

@@ -51,7 +51,7 @@ class MongoToolRepository(ToolRepository):
     
     async def save(self, tool: Tool) -> Tool:
         """Save a tool to the repository."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         # Convert to database entity
         db_tool = self._to_db_entity(tool)
@@ -78,7 +78,7 @@ class MongoToolRepository(ToolRepository):
     
     async def find_by_id(self, tool_id: str) -> Optional[Tool]:
         """Find a tool by its ID."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         try:
             db_tool = await collection.find_one({"_id": ObjectId(tool_id)})
@@ -88,7 +88,7 @@ class MongoToolRepository(ToolRepository):
     
     async def find_by_server_id(self, server_id: str) -> List[Tool]:
         """Find all tools for a specific server."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         tools = []
         async for db_tool in collection.find({"server_id": server_id}):
@@ -98,7 +98,7 @@ class MongoToolRepository(ToolRepository):
     
     async def find_all(self) -> List[Tool]:
         """Find all tools."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         tools = []
         async for db_tool in collection.find():
@@ -108,7 +108,7 @@ class MongoToolRepository(ToolRepository):
     
     async def delete(self, tool_id: str) -> bool:
         """Delete a tool by its ID."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         try:
             result = await collection.delete_one({"_id": ObjectId(tool_id)})
@@ -118,7 +118,7 @@ class MongoToolRepository(ToolRepository):
     
     async def delete_by_server_id(self, server_id: str) -> bool:
         """Delete all tools for a specific server."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         try:
             result = await collection.delete_many({"server_id": server_id})

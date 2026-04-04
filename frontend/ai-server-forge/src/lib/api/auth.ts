@@ -1,8 +1,24 @@
 import type { TokenResponse, UserResponse } from '@/types/api';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8005';
 
 export const authApi = {
+  /** Register a new user */
+  register: async (username: string, password: string): Promise<TokenResponse> => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.detail || 'Registration failed');
+    }
+
+    return response.json();
+  },
+
   /** Login uses form-encoded body (OAuth2 password flow) */
   login: async (username: string, password: string): Promise<TokenResponse> => {
     const body = new URLSearchParams({ username, password });

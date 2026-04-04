@@ -62,19 +62,19 @@ class MockCollection:
         logger.debug(f"Mock find_one called on {self.name}")
         return None
     
-    async def find(self, *args, **kwargs):
+    def find(self, *args, **kwargs):
         logger.debug(f"Mock find called on {self.name}")
-        
+
         class AsyncCursor:
             def __init__(self):
                 self.data = []
-            
+
             def __aiter__(self):
                 return self
-            
+
             async def __anext__(self):
                 raise StopAsyncIteration
-        
+
         return AsyncCursor()
     
     async def insert_one(self, *args, **kwargs):

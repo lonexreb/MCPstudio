@@ -3,16 +3,25 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.security import OAuth2PasswordRequestForm
 
 from mcp_studio.api.controllers.auth_controller import AuthController
-from mcp_studio.api.schemas.auth_schema import TokenResponse, GoogleAuthResponse
+from mcp_studio.api.schemas.auth_schema import TokenResponse, GoogleAuthResponse, RegisterRequest
 from mcp_studio.container import get_container
 
 router = APIRouter()
 
 
+@router.post("/register", response_model=TokenResponse)
+async def register(
+    data: RegisterRequest,
+    auth_controller: AuthController = Depends(lambda: get_container().auth_controller())
+):
+    """Register a new user account."""
+    return await auth_controller.register(data)
+
+
 @router.post("/token", response_model=TokenResponse)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    auth_controller: AuthController = Depends(lambda: get_container().resolve(AuthController))
+    auth_controller: AuthController = Depends(lambda: get_container().auth_controller())
 ):
     """
     OAuth2 compatible token login, get an access token for future requests.
@@ -23,7 +32,7 @@ async def login_for_access_token(
 @router.get("/google/auth", response_model=dict)
 async def get_google_auth_url(
     server_id: str = Query(None, description="Optional server ID to associate with auth"),
-    auth_controller: AuthController = Depends(lambda: get_container().resolve(AuthController))
+    auth_controller: AuthController = Depends(lambda: get_container().auth_controller())
 ):
     """
     Get Google OAuth authorization URL.
@@ -35,7 +44,7 @@ async def get_google_auth_url(
 async def process_google_callback(
     code: str = Query(..., description="Authorization code from Google"),
     state: str = Query(None, description="State parameter containing server ID"),
-    auth_controller: AuthController = Depends(lambda: get_container().resolve(AuthController))
+    auth_controller: AuthController = Depends(lambda: get_container().auth_controller())
 ):
     """
     Process Google OAuth callback and get tokens.
@@ -45,8 +54,8 @@ async def process_google_callback(
 
 @router.get("/me", response_model=dict)
 async def get_current_user(
-    auth_controller: AuthController = Depends(lambda: get_container().resolve(AuthController)),
-    current_user: dict = Depends(lambda auth_controller=Depends(lambda: get_container().resolve(AuthController)): 
+    auth_controller: AuthController = Depends(lambda: get_container().auth_controller()),
+    current_user: dict = Depends(lambda auth_controller=Depends(lambda: get_container().auth_controller()): 
                                 auth_controller.get_current_user())
 ):
     """

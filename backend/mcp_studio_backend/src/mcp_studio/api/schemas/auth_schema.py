@@ -19,7 +19,14 @@ class GoogleAuthResponse(BaseModel):
     auth_config: Dict[str, Any] = Field(..., description="Auth configuration for MCP server")
 
 
+class RegisterRequest(BaseModel):
+    """Schema for user registration."""
+
+    username: str = Field(..., description="Username", min_length=3)
+    password: str = Field(..., description="Password", min_length=4)
+
+
 class GoogleAuthRequest(BaseModel):
     """Schema for Google OAuth request."""
-    
+
     server_id: Optional[str] = Field(None, description="Optional server ID to associate with auth")

@@ -83,7 +83,7 @@ class MongoServerRepository(ServerRepository):
     
     async def save(self, server: Server) -> Server:
         """Save a server to the repository."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         # Convert to database entity
         db_server = self._to_db_entity(server)
@@ -110,7 +110,7 @@ class MongoServerRepository(ServerRepository):
     
     async def find_by_id(self, server_id: str) -> Optional[Server]:
         """Find a server by its ID."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         try:
             db_server = await collection.find_one({"_id": ObjectId(server_id)})
@@ -120,7 +120,7 @@ class MongoServerRepository(ServerRepository):
     
     async def find_all(self) -> List[Server]:
         """Find all servers."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         servers = []
         async for db_server in collection.find():
@@ -130,7 +130,7 @@ class MongoServerRepository(ServerRepository):
     
     async def find_by_user_id(self, user_id: str) -> List[Server]:
         """Find all servers owned by a specific user."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         servers = []
         async for db_server in collection.find({"user_id": user_id}):
@@ -140,7 +140,7 @@ class MongoServerRepository(ServerRepository):
     
     async def delete(self, server_id: str) -> bool:
         """Delete a server by its ID."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         try:
             result = await collection.delete_one({"_id": ObjectId(server_id)})
@@ -150,7 +150,7 @@ class MongoServerRepository(ServerRepository):
     
     async def find_by_criteria(self, criteria: Dict[str, Any]) -> List[Server]:
         """Find servers matching the given criteria."""
-        collection = await self._get_collection()
+        collection = self._get_collection()
         
         servers = []
         async for db_server in collection.find(criteria):
