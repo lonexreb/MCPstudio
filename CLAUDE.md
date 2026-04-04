@@ -35,9 +35,18 @@ Domain-Driven Design with 4 layers:
 ```
 backend/mcp_studio_backend/src/mcp_studio/
 ├── api/              # Controllers, routes, schemas (Pydantic)
+│   ├── controllers/  # auth, server, tool, execution, discovery controllers
+│   ├── routes/       # auth, server, tool, execution, discovery routes
+│   └── schemas/      # auth, server, tool, execution, discovery schemas
 ├── application/      # Services, DTOs (orchestration layer)
+│   └── services/     # auth, server, tool, execution, discovery services
 ├── domain/           # Models, repository interfaces, domain services
-├── infrastructure/   # MongoDB repos, Google Drive client, EventBus, logging
+│   ├── models/       # server, tool, execution_result
+│   └── repositories/ # server, tool, execution repository interfaces
+├── infrastructure/   # MongoDB repos, Google Drive client, EventBus, registry clients
+│   ├── database/     # MongoDB repos (server, tool, execution)
+│   ├── external/     # Google Drive client, registry clients (npm, github)
+│   └── messaging/    # EventBus with WebSocket support
 ├── config/           # settings.py (pydantic-settings, loads .env)
 ├── container.py      # Dependency injection (dependency_injector library)
 ├── main.py           # FastAPI app, CORS, route registration, lifespan
@@ -45,23 +54,31 @@ backend/mcp_studio_backend/src/mcp_studio/
 
 frontend/ai-server-forge/src/
 ├── features/
-│   ├── auth/         # AuthGuard, Login & Signup pages, Supabase auth hooks, auth-store
-│   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard, ServerList,
-│   │                 # ConfigExport, ConfigImport, config-serializer, use-servers, server-store
-│   ├── tools/        # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
-│   ├── pipeline/     # PipelineList, PipelineEditor, PipelineCanvas, nodes (Input/Output/Tool),
-│   │                 # PipelineSidebar, PipelineToolbar, pipeline-store, use-pipeline-db,
-│   │                 # auto-layout, pipeline-engine, pipeline types
-│   └── execution/    # Arena (side-by-side comparison), ArenaPanel, ComparisonView,
-│                     # ExecutionHistory, ExecutionMetrics, ExecutionPanel, ExecutionResult,
-│                     # ParameterForm, execution-store, use-execution-history, db
+│   ├── auth/           # AuthGuard, Login & Signup pages, Supabase auth hooks, auth-store
+│   ├── servers/        # Dashboard, NewServer, ServerDetail, ServerCard, ServerList,
+│   │                   # ConfigExport, ConfigImport, config-serializer, use-servers, server-store
+│   ├── tools/          # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
+│   ├── tools-library/  # ToolsLibrary page, ToolCard, ToolFilters, use-all-tools
+│   ├── pipeline/       # PipelineList, PipelineEditor, PipelineCanvas, nodes (Input/Output/Tool),
+│   │                   # PipelineSidebar, PipelineToolbar, pipeline-store, use-pipeline-db,
+│   │                   # auto-layout, pipeline-engine, pipeline types
+│   ├── execution/      # Arena, ArenaPanel, ComparisonView, ExecutionHistory, ExecutionMetrics,
+│   │                   # ExecutionPanel, ExecutionResult, ParameterForm, ExecutionHistoryPage,
+│   │                   # execution-store, use-execution-history, use-server-history, db
+│   ├── resources/      # ResourcesPage, ResourceCard, use-resources
+│   ├── prompts/        # PromptsPage, PromptCard, PromptEditor, use-prompts (Dexie)
+│   ├── settings/       # SettingsPage, ThemeToggle, ApiConfig, DataManagement, settings-store
+│   ├── docs/           # DocsPage, docs-content (static)
+│   ├── support/        # SupportPage, FaqSection, QuickLinks, FeedbackForm
+│   ├── onboarding/     # SplashScreen, TourOverlay, onboarding-store, tour-steps
+│   └── discovery/      # DiscoveryPage, DiscoveryCard, discovery-store, use-discovery
 ├── components/
 │   ├── layout/       # MainLayout, Header, Sidebar (shared)
 │   └── ui/           # 47+ shadcn/ui components incl. Resizable (shared)
 ├── stores/           # ui-store (global UI state, Zustand + persist)
 ├── hooks/            # use-mobile, use-toast (shared utilities)
 ├── lib/
-│   ├── api/          # Typed API client (client, servers, tools, auth)
+│   ├── api/          # Typed API client (client, servers, tools, auth, resources, executions, discovery)
 │   ├── supabase.ts   # Supabase client initialization
 │   └── utils.ts      # cn() classname helper
 ├── types/
@@ -77,11 +94,18 @@ frontend/ai-server-forge/src/
 | `/` | servers | Dashboard |
 | `/new-server` | servers | Create server |
 | `/server/:id` | servers | Detail + tool testing + config export/import |
+| `/tools` | tools-library | Browse all tools across servers |
+| `/resources` | resources | Browse MCP resources per server |
+| `/prompts` | prompts | Create/manage prompt templates (IndexedDB) |
 | `/pipelines` | pipeline | List pipelines |
 | `/pipelines/new` | pipeline | Build pipeline |
 | `/pipelines/:id` | pipeline | Edit pipeline |
 | `/arena` | execution | Side-by-side tool comparison |
-| `/tools`, `/resources`, `/prompts`, `/docs`, `/support`, `/settings` | — | Still placeholder (→ Dashboard) |
+| `/history` | execution | Server-side execution history log |
+| `/discover` | discovery | Search npm/GitHub for MCP servers |
+| `/docs` | docs | Documentation (static content) |
+| `/support` | support | FAQ, quick links, feedback form |
+| `/settings` | settings | Theme, API config, profile, data management |
 
 ## Key Conventions
 
@@ -91,10 +115,12 @@ frontend/ai-server-forge/src/
 - **Pydantic-settings** for config — loads from `.env` file
 - **Frontend state**: Zustand stores with `persist` middleware (localStorage)
 - **Frontend data fetching**: React Query hooks wrapping typed API client (`lib/api/`)
+- **Frontend local data**: Dexie/IndexedDB for executions, pipelines, prompts
 - **Frontend UI**: shadcn/ui components (Radix primitives + Tailwind)
 - **Auth flow**: Supabase email/password auth on frontend; JWT tokens stored in Zustand auth store; AuthGuard redirects to `/login`; API client auto-injects bearer token
-- **Styling**: Tailwind CSS with custom `mcp.blue` (#2563eb), `mcp.purple` (#7c3aed), `mcp.teal` (#0d9488) color tokens
+- **Styling**: Tailwind CSS with custom `mcp.blue` (#2563eb), `mcp.purple` (#7c3aed), `mcp.teal` (#0d9488) color tokens, gradient utilities, glow effects
 - **Path alias**: `@/` maps to `frontend/ai-server-forge/src/`
+- **Onboarding**: First-run splash screen + guided tour with spotlight overlay; state in `mcp-onboarding` localStorage
 
 ## Known Issues
 
@@ -102,13 +128,10 @@ frontend/ai-server-forge/src/
 Frontend uses Supabase auth (email/password). Backend still has hardcoded `admin/password` fallback and an in-memory `_users_db` for the `/register` endpoint — not persisted across restarts. Server/tool routes currently bypass auth guards (hardcoded user).
 
 ### Circular dependency workaround
-`ServerService` ↔ `ToolService` circular reference resolved in `container.py` via `.with_tool_service()` / `.with_server_service()` post-init methods.
+`ServerService` ↔ `ToolService` circular reference resolved in `container.py` via `.with_tool_service()` / `.with_server_service()` / `.with_execution_service()` post-init methods.
 
 ### MongoDB optional
 When MongoDB unavailable, `MockCollection` in `infrastructure/database/connection.py` provides in-memory fallback. Data not persisted.
-
-### Placeholder routes
-`/tools`, `/resources`, `/prompts`, `/docs`, `/support`, `/settings` still redirect to the Dashboard. `/pipelines` and `/arena` are fully implemented.
 
 ## Testing
 
@@ -135,8 +158,15 @@ pytest tests/unit/        # unit tests only
 | POST | `/api/servers/{id}/connect` | Connect & discover tools |
 | POST | `/api/servers/{id}/disconnect` | Disconnect |
 | GET | `/api/servers/{id}/tools` | List server tools |
+| GET | `/api/servers/{id}/resources` | List server resources |
+| GET | `/api/tools` | List all tools (cross-server) |
 | GET | `/api/tools/{id}` | Get tool |
 | POST | `/api/servers/{id}/tools/{id}/execute` | Execute tool |
+| GET | `/api/executions` | Execution history (filterable) |
+| GET | `/api/executions/{id}` | Get execution details |
+| DELETE | `/api/executions` | Clear execution history |
+| GET | `/api/discovery/search` | Search MCP servers (npm/GitHub) |
+| GET | `/api/discovery/categories` | List server categories |
 
 ## Key Entry Points
 
@@ -147,5 +177,8 @@ pytest tests/unit/        # unit tests only
 - **API types**: `frontend/ai-server-forge/src/types/api.ts`
 - **API client**: `frontend/ai-server-forge/src/lib/api/client.ts`
 - **Auth store**: `frontend/ai-server-forge/src/features/auth/stores/auth-store.ts`
+- **Settings store**: `frontend/ai-server-forge/src/features/settings/stores/settings-store.ts`
+- **Onboarding store**: `frontend/ai-server-forge/src/features/onboarding/stores/onboarding-store.ts`
+- **Dexie DB**: `frontend/ai-server-forge/src/features/execution/lib/db.ts`
 - **Supabase client**: `frontend/ai-server-forge/src/lib/supabase.ts`
 - **Tailwind config**: `frontend/ai-server-forge/tailwind.config.ts`

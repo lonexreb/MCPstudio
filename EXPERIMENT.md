@@ -16,6 +16,11 @@ MCPStudio was enhanced with patterns from [Unsloth Studio](https://github.com/un
 | Model Arena | Tool Execution Arena (side-by-side with JSON diff) | Done |
 | YAML config export | Config Export/Import (JSON/YAML with zod validation) | Done |
 | User auth (Supabase/Firebase) | Supabase Auth (email/password signup & login) | Done |
+| Splash Screen + Onboarding | Guided Tour with spotlight overlay + confetti | Done |
+| Training History (SQLite) | Server-side execution history (MongoDB) + History page | Done |
+| Model/Server Discovery (HuggingFace) | MCP Server Discovery (npm + GitHub registries) | Done |
+| Settings page | Settings (theme, API config, data management, profile) | Done |
+| Documentation | Docs page + Help & Support with FAQ | Done |
 
 ## Implementation Phases
 
@@ -75,6 +80,50 @@ MCPStudio was enhanced with patterns from [Unsloth Studio](https://github.com/un
 - [x] Fix async/sync mismatch in `MockCollection.find()` and mongo repo `_get_collection()`
 - [x] Temporarily bypass auth guards on server/tool routes for development
 
+### Phase 8: Fill the Gaps — 6 Placeholder Pages (COMPLETE)
+- [x] Settings page (Appearance/theme toggle, API config, Profile, Data Management, About)
+- [x] Settings store with persist middleware (`mcp-settings`)
+- [x] API client reads base URL from settings store
+- [x] Tools Library page (cross-server tool browser with search/filter)
+- [x] Backend `GET /api/tools` endpoint with `ToolWithServerResponse` schema
+- [x] Resources page (per-server resource browser)
+- [x] Backend `GET /api/servers/{id}/resources` endpoint + `discover_resources()` in MCPProtocolService
+- [x] ServerDetail Resources tab replaced "Coming Soon" with ResourceCard grid
+- [x] Prompt Templates page (Dexie/IndexedDB CRUD with PromptEditor dialog)
+- [x] Dexie DB version 3 with `prompts` table
+- [x] ServerDetail Prompts tab replaced "Coming Soon" with PromptCard grid + editor
+- [x] Documentation page (accordion sections with static content)
+- [x] Help & Support page (FAQ, Quick Links, Feedback form)
+
+### Phase 9: Onboarding & Guided Tour (COMPLETE)
+- [x] Onboarding store with persist middleware (`mcp-onboarding`)
+- [x] Splash screen on first visit with "Start Tour" / "Skip" options
+- [x] Guided tour with spotlight overlay (box-shadow cutout) and tooltip card
+- [x] 6 tour steps covering Sidebar, New Server, Dashboard, Tools, Pipelines, Arena
+- [x] `data-tour` attributes on Sidebar, Dashboard hero, nav items
+- [x] `canvas-confetti` celebration on tour completion
+- [x] "Restart Tour" button in Settings page
+
+### Phase 10: Real-Time & Execution History (COMPLETE)
+- [x] `ExecutionResult` domain model (backend)
+- [x] `ExecutionRepository` interface + `MongoExecutionRepository` implementation
+- [x] `ExecutionService` for save/query/clear operations
+- [x] `ExecutionController` + `GET/DELETE /api/executions` routes
+- [x] `ToolService.execute_tool()` persists results to execution history
+- [x] DI wiring: execution_repository → execution_service → tool_service (via `with_execution_service`)
+- [x] Frontend `/history` page with expandable rows, pagination, clear all
+- [x] "History" nav item in sidebar (Clock icon)
+
+### Phase 11: MCP Server Discovery (COMPLETE)
+- [x] npm registry search client (`httpx` async)
+- [x] GitHub API search client (`httpx` async)
+- [x] `DiscoveryService` with in-memory cache (5-min TTL)
+- [x] `DiscoveryController` + `GET /api/discovery/search`, `GET /api/discovery/categories`
+- [x] Frontend `/discover` page with debounced search, source tabs (All/npm/GitHub)
+- [x] `DiscoveryCard` with source badge, stars, tags, "View" and "Copy Install" buttons
+- [x] `discovery-store` (Zustand, no persist)
+- [x] "Discover" nav item in sidebar (Compass icon)
+
 ## Dependencies Added
 
 | Package | Purpose | Phase |
@@ -85,6 +134,7 @@ MCPStudio was enhanced with patterns from [Unsloth Studio](https://github.com/un
 | `@dagrejs/dagre` | Auto-layout for pipeline graphs | 4 |
 | `js-yaml` + `@types/js-yaml` | YAML config export/import | 6 |
 | `@supabase/supabase-js` | Supabase auth (email/password signup & login) | 7 |
+| `canvas-confetti` | Confetti celebration on tour completion | 9 |
 
 ## PR History
 

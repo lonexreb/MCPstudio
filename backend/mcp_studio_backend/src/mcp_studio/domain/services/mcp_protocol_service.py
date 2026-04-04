@@ -94,6 +94,25 @@ class MCPProtocolService:
             logger.error(f"Error discovering tools: {e}")
             raise
     
+    async def discover_resources(self, connection: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Discover resources available on an MCP server.
+
+        Args:
+            connection: Connection object from connect()
+
+        Returns:
+            List of resource definitions
+        """
+        try:
+            service = connection["service"]
+            if hasattr(service, "get_resource_definitions"):
+                return await service.get_resource_definitions()
+            return []
+        except Exception as e:
+            logger.error(f"Error discovering resources: {e}")
+            return []
+
     async def execute_tool(self, url: str, tool_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a tool on an MCP server.

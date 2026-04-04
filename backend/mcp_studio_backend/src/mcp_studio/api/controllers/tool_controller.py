@@ -5,8 +5,10 @@ from typing import List, Dict, Any
 from fastapi import HTTPException, status, Depends
 
 from mcp_studio.api.schemas.tool_schema import (
-    ToolResponse, 
-    ToolExecutionRequest, 
+    ToolResponse,
+    ToolWithServerResponse,
+    AllToolsListResponse,
+    ToolExecutionRequest,
     ToolExecutionResponse,
     ToolListResponse
 )
@@ -30,6 +32,41 @@ class ToolController:
         self.server_service = server_service
         self.auth_controller = auth_controller
     
+    async def get_all_tools(
+        self,
+        current_user: Dict[str, Any]
+    ) -> AllToolsListResponse:
+        """Get all tools across all servers."""
+        try:
+            tools = await self.tool_service.get_all_tools()
+            servers_cache: Dict[str, str] = {}
+            tool_responses = []
+
+            for tool in tools:
+                if tool.server_id not in servers_cache:
+                    server = await self.server_service.get_server_by_id(tool.server_id)
+                    servers_cache[tool.server_id] = server.name if server else "Unknown"
+
+                tool_responses.append(
+                    ToolWithServerResponse(
+                        id=tool.id,
+                        name=tool.name,
+                        description=tool.description,
+                        parameters=tool.parameters,
+                        returns=tool.returns,
+                        server_id=tool.server_id,
+                        server_name=servers_cache[tool.server_id],
+                    )
+                )
+
+            return AllToolsListResponse(tools=tool_responses)
+        except Exception as e:
+            logger.error(f"Error getting all tools: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error getting tools: {str(e)}"
+            )
+
     async def get_tools_for_server(
         self, 
         server_id: str,

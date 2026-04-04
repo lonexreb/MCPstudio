@@ -6,7 +6,8 @@ from mcp_studio.api.schemas.tool_schema import (
     ToolResponse,
     ToolExecutionRequest,
     ToolExecutionResponse,
-    ToolListResponse
+    ToolListResponse,
+    AllToolsListResponse,
 )
 from mcp_studio.container import get_container
 
@@ -15,6 +16,14 @@ router = APIRouter()
 
 def get_tool_controller() -> ToolController:
     return get_container().tool_controller()
+
+
+@router.get("/tools", response_model=AllToolsListResponse)
+async def get_all_tools(
+    tool_controller: ToolController = Depends(get_tool_controller),
+):
+    """Get all tools across all servers."""
+    return await tool_controller.get_all_tools({"id": "1", "username": "user"})
 
 
 @router.get("/servers/{server_id}/tools", response_model=ToolListResponse)

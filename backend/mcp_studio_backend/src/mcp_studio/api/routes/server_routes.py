@@ -71,6 +71,15 @@ async def connect_to_server(
     return await server_controller.connect_to_server(server_id, {"id": "1", "username": "user"})
 
 
+@router.get("/{server_id}/resources")
+async def get_resources_for_server(
+    server_id: str,
+    server_controller: ServerController = Depends(get_server_controller),
+):
+    """Get resources for a server."""
+    return await server_controller.get_resources(server_id, {"id": "1", "username": "user"})
+
+
 @router.post("/{server_id}/disconnect", response_model=ServerResponse)
 async def disconnect_from_server(
     server_id: str,

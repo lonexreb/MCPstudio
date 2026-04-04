@@ -4,6 +4,7 @@ from dependency_injector import containers, providers
 
 from mcp_studio.infrastructure.database.repositories.mongo_server_repo import MongoServerRepository
 from mcp_studio.infrastructure.database.repositories.mongo_tool_repo import MongoToolRepository
+from mcp_studio.infrastructure.database.repositories.mongo_execution_repo import MongoExecutionRepository
 from mcp_studio.infrastructure.database.connection import database
 from mcp_studio.infrastructure.messaging.event_bus import EventBus
 from mcp_studio.infrastructure.logging.logger import Logger
@@ -13,10 +14,14 @@ from mcp_studio.domain.services.mcp_protocol_service import MCPProtocolService, 
 from mcp_studio.application.services.server_service import ServerService
 from mcp_studio.application.services.tool_service import ToolService
 from mcp_studio.application.services.auth_service import AuthService
+from mcp_studio.application.services.execution_service import ExecutionService
+from mcp_studio.application.services.discovery_service import DiscoveryService
 
 from mcp_studio.api.controllers.server_controller import ServerController
 from mcp_studio.api.controllers.tool_controller import ToolController
 from mcp_studio.api.controllers.auth_controller import AuthController
+from mcp_studio.api.controllers.execution_controller import ExecutionController
+from mcp_studio.api.controllers.discovery_controller import DiscoveryController
 
 
 class Container(containers.DeclarativeContainer):
@@ -40,7 +45,12 @@ class Container(containers.DeclarativeContainer):
         MongoToolRepository,
         database=database
     )
-    
+
+    execution_repository = providers.Singleton(
+        MongoExecutionRepository,
+        database=database
+    )
+
     # Domain services
     service_registry = providers.Singleton(ServiceRegistry)
     
@@ -64,6 +74,13 @@ class Container(containers.DeclarativeContainer):
     auth_service = providers.Singleton(
         AuthService
     )
+
+    execution_service = providers.Singleton(
+        ExecutionService,
+        execution_repository=execution_repository
+    )
+
+    discovery_service = providers.Singleton(DiscoveryService)
     
     # We need to create these as providers.Factory first to avoid circular dependency
     server_service = providers.Factory(
@@ -90,9 +107,10 @@ class Container(containers.DeclarativeContainer):
     )
     
     tool_service_singleton = providers.Singleton(
-        lambda service, server_svc: service.with_server_service(server_svc),
+        lambda service, server_svc, exec_svc: service.with_server_service(server_svc).with_execution_service(exec_svc),
         service=tool_service,
-        server_svc=server_service
+        server_svc=server_service,
+        exec_svc=execution_service,
     )
     
     # Controllers
@@ -113,6 +131,16 @@ class Container(containers.DeclarativeContainer):
         tool_service=tool_service_singleton,
         server_service=server_service_singleton,
         auth_controller=auth_controller
+    )
+
+    execution_controller = providers.Singleton(
+        ExecutionController,
+        execution_service=execution_service
+    )
+
+    discovery_controller = providers.Singleton(
+        DiscoveryController,
+        discovery_service=discovery_service
     )
 
 

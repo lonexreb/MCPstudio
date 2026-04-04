@@ -1,6 +1,9 @@
 import { useAuthStore } from '@/features/auth/stores/auth-store';
+import { useSettingsStore } from '@/features/settings/stores/settings-store';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8005';
+function getBaseUrl() {
+  return useSettingsStore.getState().apiBaseUrl;
+}
 
 class ApiError extends Error {
   constructor(
@@ -28,7 +31,7 @@ async function request<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${getBaseUrl()}${path}`, {
     ...options,
     headers,
   });

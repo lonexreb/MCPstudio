@@ -112,6 +112,25 @@ class ServerController:
         
         return ServerResponse.model_validate(server)
     
+    async def get_resources(self, server_id: str, user: Dict[str, Any]) -> Dict[str, Any]:
+        """Get resources for a server."""
+        server = await self.server_service.get_server_by_id(server_id)
+        if not server:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Server with ID {server_id} not found"
+            )
+
+        try:
+            connection = await self.server_service.mcp_protocol_service.connect(
+                server.connection_url,
+                server.auth_config
+            )
+            resources = await self.server_service.mcp_protocol_service.discover_resources(connection)
+            return {"resources": resources, "server_id": server_id}
+        except Exception:
+            return {"resources": [], "server_id": server_id}
+
     async def execute_tool(self, server_id: str, tool_id: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a tool on a server."""
         # First check if the server exists

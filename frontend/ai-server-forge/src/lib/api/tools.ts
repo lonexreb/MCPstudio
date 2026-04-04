@@ -2,11 +2,15 @@ import { api } from './client';
 import type {
   ToolResponse,
   ToolListResponse,
+  AllToolsListResponse,
   ToolExecutionRequest,
   ToolExecutionResponse,
 } from '@/types/api';
 
 export const toolsApi = {
+  listAll: () =>
+    api.get<AllToolsListResponse>('/api/tools'),
+
   listForServer: (serverId: string) =>
     api.get<ToolListResponse>(`/api/servers/${serverId}/tools`),
 

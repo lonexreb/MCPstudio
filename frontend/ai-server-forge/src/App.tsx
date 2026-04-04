@@ -14,6 +14,16 @@ import NotFound from "./pages/NotFound";
 import PipelineList from "@/features/pipeline/pages/PipelineList";
 import PipelineEditor from "@/features/pipeline/pages/PipelineEditor";
 import Arena from "@/features/execution/pages/Arena";
+import SettingsPage from "@/features/settings/pages/SettingsPage";
+import ToolsLibrary from "@/features/tools-library/pages/ToolsLibrary";
+import ResourcesPage from "@/features/resources/pages/ResourcesPage";
+import PromptsPage from "@/features/prompts/pages/PromptsPage";
+import DocsPage from "@/features/docs/pages/DocsPage";
+import SupportPage from "@/features/support/pages/SupportPage";
+import ExecutionHistoryPage from "@/features/execution/pages/ExecutionHistoryPage";
+import DiscoveryPage from "@/features/discovery/pages/DiscoveryPage";
+import SplashScreen from "@/features/onboarding/components/SplashScreen";
+import TourOverlay from "@/features/onboarding/components/TourOverlay";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +41,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <SplashScreen />
+        <TourOverlay />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -41,12 +53,14 @@ const App = () => (
           <Route path="/pipelines/new" element={<AuthGuard><PipelineEditor /></AuthGuard>} />
           <Route path="/pipelines/:id" element={<AuthGuard><PipelineEditor /></AuthGuard>} />
           <Route path="/arena" element={<AuthGuard><Arena /></AuthGuard>} />
-          <Route path="/tools" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/resources" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/prompts" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/docs" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/support" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/settings" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/tools" element={<AuthGuard><ToolsLibrary /></AuthGuard>} />
+          <Route path="/resources" element={<AuthGuard><ResourcesPage /></AuthGuard>} />
+          <Route path="/prompts" element={<AuthGuard><PromptsPage /></AuthGuard>} />
+          <Route path="/docs" element={<AuthGuard><DocsPage /></AuthGuard>} />
+          <Route path="/support" element={<AuthGuard><SupportPage /></AuthGuard>} />
+          <Route path="/history" element={<AuthGuard><ExecutionHistoryPage /></AuthGuard>} />
+          <Route path="/discover" element={<AuthGuard><DiscoveryPage /></AuthGuard>} />
+          <Route path="/settings" element={<AuthGuard><SettingsPage /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

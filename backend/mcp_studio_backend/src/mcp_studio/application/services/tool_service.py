@@ -28,10 +28,16 @@ class ToolService:
         self.mcp_protocol_service = mcp_protocol_service
         self.event_bus = event_bus
         self.server_service = None
-    
+        self.execution_service = None
+
     def with_server_service(self, server_service):
         """Set the server service reference to resolve circular dependency."""
         self.server_service = server_service
+        return self
+
+    def with_execution_service(self, execution_service):
+        """Set the execution service reference for persisting results."""
+        self.execution_service = execution_service
         return self
     
     async def get_tool_by_id(self, tool_id: str) -> Optional[Tool]:
@@ -109,7 +115,23 @@ class ToolService:
                     result=result
                 )
             )
-            
+
+            # Persist execution result
+            if self.execution_service:
+                try:
+                    await self.execution_service.save_execution(
+                        server_id=server.id,
+                        server_name=server.name,
+                        tool_id=tool_id,
+                        tool_name=tool.name,
+                        parameters=parameters,
+                        result=result,
+                        status="success",
+                        execution_time=execution_time,
+                    )
+                except Exception as persist_err:
+                    logger.warning(f"Failed to persist execution result: {persist_err}")
+
             return response
         except Exception as e:
             logger.error(f"Error executing tool {tool_id}: {e}")
@@ -132,5 +154,22 @@ class ToolService:
                     result={"error": str(e)}
                 )
             )
-            
+
+            # Persist error result
+            if self.execution_service:
+                try:
+                    await self.execution_service.save_execution(
+                        server_id=server.id,
+                        server_name=server.name,
+                        tool_id=tool_id,
+                        tool_name=tool.name,
+                        parameters=parameters,
+                        result={"error": str(e)},
+                        status="error",
+                        execution_time=0,
+                        error_message=str(e),
+                    )
+                except Exception as persist_err:
+                    logger.warning(f"Failed to persist error result: {persist_err}")
+
             return error_response

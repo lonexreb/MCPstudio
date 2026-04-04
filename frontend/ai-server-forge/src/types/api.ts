@@ -83,6 +83,20 @@ export interface ToolListResponse {
   tools: ToolResponse[];
 }
 
+export interface ToolWithServerResponse {
+  id: string;
+  name: string;
+  description: string;
+  parameters: Record<string, any>;
+  returns: Record<string, any>;
+  server_id: string;
+  server_name: string;
+}
+
+export interface AllToolsListResponse {
+  tools: ToolWithServerResponse[];
+}
+
 export interface ToolExecutionRequest {
   parameters: Record<string, any>;
 }

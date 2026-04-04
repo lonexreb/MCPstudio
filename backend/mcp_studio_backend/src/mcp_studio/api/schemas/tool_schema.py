@@ -19,6 +19,24 @@ class ToolListResponse(BaseModel):
     tools: List[ToolResponse] = Field(..., description="List of tools")
 
 
+class ToolWithServerResponse(BaseModel):
+    """Schema for tool response with server info."""
+
+    id: str = Field(..., description="Tool ID")
+    name: str = Field(..., description="Tool name")
+    description: str = Field(..., description="Tool description")
+    parameters: Dict[str, Any] = Field(..., description="Tool parameters schema")
+    returns: Dict[str, Any] = Field(..., description="Tool returns schema")
+    server_id: str = Field(..., description="Server ID this tool belongs to")
+    server_name: str = Field("", description="Server name")
+
+
+class AllToolsListResponse(BaseModel):
+    """Schema for all tools list response."""
+
+    tools: List[ToolWithServerResponse] = Field(..., description="List of tools with server info")
+
+
 class ToolExecutionRequest(BaseModel):
     """Schema for tool execution request."""
     

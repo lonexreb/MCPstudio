@@ -12,7 +12,9 @@ import {
   Layout,
   LifeBuoy,
   Workflow,
-  Swords
+  Swords,
+  Clock,
+  Compass,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,12 +24,14 @@ interface SidebarItemProps {
   active?: boolean;
   href: string;
   color?: string;
+  dataTour?: string;
 }
 
-const SidebarItem = ({ icon: Icon, label, active, href, color = 'text-muted-foreground' }: SidebarItemProps) => {
+const SidebarItem = ({ icon: Icon, label, active, href, color = 'text-muted-foreground', dataTour }: SidebarItemProps) => {
   return (
     <Link
       to={href}
+      data-tour={dataTour}
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
         active
@@ -50,7 +54,7 @@ interface SidebarProps {
 
 const Sidebar = ({ activePath = "/" }: SidebarProps) => {
   return (
-    <div className="w-64 h-screen flex flex-col border-r border-white/5 relative overflow-hidden"
+    <div data-tour="sidebar" className="w-64 h-screen flex flex-col border-r border-white/5 relative overflow-hidden"
       style={{ background: 'linear-gradient(180deg, hsl(250, 30%, 8%) 0%, hsl(240, 25%, 6%) 100%)' }}
     >
       {/* Subtle gradient orb in background */}
@@ -72,6 +76,7 @@ const Sidebar = ({ activePath = "/" }: SidebarProps) => {
       <div className="px-3 py-2 relative">
         <Link
           to="/new-server"
+          data-tour="new-server"
           className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold text-white gradient-brand hover:gradient-brand-hover transition-all shadow-md hover:shadow-lg hover:shadow-purple-500/20"
         >
           <PlusCircle className="h-4 w-4" />
@@ -95,6 +100,7 @@ const Sidebar = ({ activePath = "/" }: SidebarProps) => {
             href="/tools"
             active={activePath === "/tools"}
             color="text-mcp-orange-400"
+            dataTour="tools-nav"
           />
           <SidebarItem
             icon={Database}
@@ -116,6 +122,7 @@ const Sidebar = ({ activePath = "/" }: SidebarProps) => {
             href="/pipelines"
             active={activePath === "/pipelines" || activePath.startsWith("/pipelines/")}
             color="text-mcp-purple-400"
+            dataTour="pipelines-nav"
           />
           <SidebarItem
             icon={Swords}
@@ -123,6 +130,21 @@ const Sidebar = ({ activePath = "/" }: SidebarProps) => {
             href="/arena"
             active={activePath === "/arena"}
             color="text-mcp-pink-400"
+            dataTour="arena-nav"
+          />
+          <SidebarItem
+            icon={Clock}
+            label="History"
+            href="/history"
+            active={activePath === "/history"}
+            color="text-mcp-orange-400"
+          />
+          <SidebarItem
+            icon={Compass}
+            label="Discover"
+            href="/discover"
+            active={activePath === "/discover"}
+            color="text-mcp-cyan-400"
           />
         </nav>
       </div>

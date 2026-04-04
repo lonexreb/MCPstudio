@@ -28,6 +28,12 @@ import ExecutionPanel from '@/features/execution/components/ExecutionPanel';
 import ExecutionMetrics from '@/features/execution/components/ExecutionMetrics';
 import ExecutionHistory from '@/features/execution/components/ExecutionHistory';
 import ConfigExport from '@/features/servers/components/ConfigExport';
+import ResourceCard from '@/features/resources/components/ResourceCard';
+import { useResources } from '@/features/resources/hooks/use-resources';
+import PromptCard from '@/features/prompts/components/PromptCard';
+import PromptEditor from '@/features/prompts/components/PromptEditor';
+import { usePrompts, savePrompt, updatePrompt, deletePrompt, duplicatePrompt } from '@/features/prompts/hooks/use-prompts';
+import type { PromptTemplate } from '@/features/prompts/types/prompt';
 import type { ToolResponse, ToolReference } from '@/types/api';
 
 const ServerDetail = () => {
@@ -35,6 +41,8 @@ const ServerDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedTool, setSelectedTool] = useState<ToolResponse | null>(null);
+  const [promptEditorOpen, setPromptEditorOpen] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState<PromptTemplate | null>(null);
 
   useEffect(() => {
     setSelectedTool(null);
@@ -43,6 +51,8 @@ const ServerDetail = () => {
 
   const { data: server, isLoading, error } = useServer(id);
   const { data: tools } = useTools(id);
+  const { data: resources } = useResources(server?.status === 'connected' ? id : undefined);
+  const serverPrompts = usePrompts(id);
   const connectServer = useConnectServer();
   const disconnectServer = useDisconnectServer();
   const updateServer = useUpdateServer();
@@ -482,13 +492,23 @@ const ServerDetail = () => {
                     <p className="text-sm text-muted-foreground">Connected data sources and external services</p>
                   </div>
                 </div>
-                <div className="text-center border border-dashed rounded-md p-8">
-                  <Database className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                  <h3 className="text-lg font-medium mb-2">Coming Soon</h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Resource management will be available in a future update.
-                  </p>
-                </div>
+                {resources && resources.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {resources.map((resource) => (
+                      <ResourceCard key={resource.uri} resource={resource} serverName={server?.name} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center border border-dashed rounded-md p-8">
+                    <Database className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                    <h3 className="text-lg font-medium mb-2">No Resources</h3>
+                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                      {server?.status === 'connected'
+                        ? 'This server does not expose any resources.'
+                        : 'Connect the server to discover available resources.'}
+                    </p>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -504,13 +524,43 @@ const ServerDetail = () => {
                     <p className="text-sm text-muted-foreground">Create reusable prompt patterns</p>
                   </div>
                 </div>
-                <div className="text-center border border-dashed rounded-md p-8">
-                  <Lightbulb className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                  <h3 className="text-lg font-medium mb-2">Coming Soon</h3>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    Prompt template management will be available in a future update.
-                  </p>
-                </div>
+                {serverPrompts && serverPrompts.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {serverPrompts.map((prompt) => (
+                      <PromptCard
+                        key={prompt.id}
+                        prompt={prompt}
+                        onEdit={(p) => { setEditingPrompt(p); setPromptEditorOpen(true); }}
+                        onDelete={(pid) => deletePrompt(pid)}
+                        onDuplicate={(pid) => duplicatePrompt(pid)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center border border-dashed rounded-md p-8">
+                    <Lightbulb className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                    <h3 className="text-lg font-medium mb-2">No Prompts</h3>
+                    <p className="text-sm text-muted-foreground max-w-md mx-auto mb-4">
+                      Create prompt templates for this server's tools.
+                    </p>
+                    <Button variant="outline" onClick={() => { setEditingPrompt(null); setPromptEditorOpen(true); }}>
+                      <PlusCircle className="h-4 w-4 mr-1.5" />
+                      New Prompt
+                    </Button>
+                  </div>
+                )}
+                <PromptEditor
+                  open={promptEditorOpen}
+                  onOpenChange={setPromptEditorOpen}
+                  prompt={editingPrompt}
+                  onSave={async (data) => {
+                    if (editingPrompt?.id) {
+                      await updatePrompt(editingPrompt.id, data);
+                    } else {
+                      await savePrompt({ ...data, serverId: id });
+                    }
+                  }}
+                />
               </div>
             </TabsContent>
 

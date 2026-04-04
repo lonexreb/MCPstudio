@@ -20,7 +20,7 @@ const Index = () => {
     <MainLayout title="Dashboard" subtitle="Manage your MCP servers and tools">
       <div className="space-y-8">
         {/* Hero banner */}
-        <div className="relative overflow-hidden rounded-2xl p-8 gradient-brand shadow-lg">
+        <div data-tour="dashboard-hero" className="relative overflow-hidden rounded-2xl p-8 gradient-brand shadow-lg">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white blur-3xl" />
             <div className="absolute bottom-0 left-1/3 w-48 h-48 rounded-full bg-white blur-3xl" />
