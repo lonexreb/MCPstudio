@@ -22,27 +22,18 @@ interface ServerCardProps {
 const ServerCard = ({ server }: ServerCardProps) => {
   const navigate = useNavigate();
 
-  const getStatusColor = () => {
+  const getStatusConfig = () => {
     switch (server.status) {
       case 'connected':
-        return 'bg-green-500';
+        return { dot: 'gradient-success', text: 'Connected', textColor: 'text-emerald-400' };
       case 'error':
-        return 'bg-red-500';
+        return { dot: 'gradient-warm', text: 'Error', textColor: 'text-red-400' };
       default:
-        return 'bg-slate-500';
+        return { dot: 'bg-slate-500', text: 'Disconnected', textColor: 'text-slate-400' };
     }
   };
 
-  const getStatusText = () => {
-    switch (server.status) {
-      case 'connected':
-        return 'Connected';
-      case 'error':
-        return 'Error';
-      default:
-        return 'Disconnected';
-    }
-  };
+  const status = getStatusConfig();
 
   const handleCardClick = () => {
     navigate(`/server/${server.id}`);
@@ -51,64 +42,73 @@ const ServerCard = ({ server }: ServerCardProps) => {
   const lastUpdated = formatDistanceToNow(new Date(server.updated_at), { addSuffix: true });
 
   return (
-    <Card
-      className="overflow-hidden hover:border-primary/50 transition-all cursor-pointer animate-fade-in"
-      onClick={handleCardClick}
-    >
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-2">
-            <Server className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-semibold">{server.name}</h3>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className={`h-2 w-2 rounded-full ${getStatusColor()}`} />
-            <span className="text-xs text-muted-foreground">{getStatusText()}</span>
-          </div>
-        </div>
+    <div className="group relative animate-fade-in">
+      {/* Gradient border glow on hover */}
+      <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 gradient-brand blur-[2px]" />
+      <Card
+        className="relative overflow-hidden transition-all duration-300 cursor-pointer bg-card hover:shadow-xl hover:shadow-purple-500/5"
+        onClick={handleCardClick}
+      >
+        {/* Top accent line */}
+        <div className="h-[2px] gradient-cool" />
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-          {server.description}
-        </p>
-
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1.5">
-            <Wrench className="h-4 w-4 text-muted-foreground" />
-            <span>{server.tools.length} Tools</span>
+        <CardContent className="p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-mcp-blue-500/10 flex items-center justify-center">
+                <Server className="h-5 w-5 text-mcp-blue-400" />
+              </div>
+              <h3 className="text-lg font-semibold">{server.name}</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className={`h-2.5 w-2.5 rounded-full ${status.dot}`} />
+              <span className={`text-xs font-medium ${status.textColor}`}>{status.text}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono truncate max-w-[180px]">
-            <Plug className="h-4 w-4 shrink-0" />
-            <span className="truncate">{server.connection_url}</span>
+
+          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+            {server.description}
+          </p>
+
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-1.5">
+              <Wrench className="h-4 w-4 text-mcp-orange-400" />
+              <span className="font-medium">{server.tools.length} Tools</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono truncate max-w-[180px]">
+              <Plug className="h-4 w-4 shrink-0 text-mcp-teal-400" />
+              <span className="truncate">{server.connection_url}</span>
+            </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
 
-      <CardFooter className="bg-muted/30 px-6 py-3 border-t flex justify-between">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Clock className="h-3.5 w-3.5" />
-          <span>Updated {lastUpdated}</span>
-        </div>
+        <CardFooter className="bg-muted/20 px-6 py-3 border-t border-border/50 flex justify-between">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" />
+            <span>Updated {lastUpdated}</span>
+          </div>
 
-        {server.status === 'connected' ? (
-          <Badge variant="outline" className="text-xs border-green-500 text-green-500 gap-1">
-            <PlugZap className="h-3 w-3" />
-            Live
-          </Badge>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/server/${server.id}`);
-            }}
-          >
-            Connect
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+          {server.status === 'connected' ? (
+            <Badge className="text-xs border-0 gap-1 gradient-success text-white shadow-sm">
+              <PlugZap className="h-3 w-3" />
+              Live
+            </Badge>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs border-mcp-purple-500/30 text-mcp-purple-400 hover:bg-mcp-purple-500/10 hover:text-mcp-purple-300"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/server/${server.id}`);
+              }}
+            >
+              Connect
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    </div>
   );
 };
 
