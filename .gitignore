@@ -28,6 +28,13 @@ wheels/
 # UV
 .uv/
 
+# Node
+node_modules/
+package-lock.json
+
+# Supabase CLI
+supabase/.temp/
+
 # IDE files
 .idea/
 .vscode/

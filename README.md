@@ -15,7 +15,7 @@ MCPStudio is a web platform for creating, testing, managing, and discovering [Mo
 - **Visual Pipeline Builder** — Drag-and-drop React Flow canvas to chain MCP tools into DAG pipelines with auto-layout and frontend execution engine
 - **Tool Execution Arena** — Side-by-side resizable panels for comparing tool executions with JSON diff and timing comparison
 - **Config Export/Import** — Export server configs as JSON or YAML (credentials redacted); import via file upload, drag & drop, or paste
-- **Authentication** — JWT-based platform auth with OAuth2 flow support for service integrations (Google Drive)
+- **Authentication** — Supabase auth (email/password signup & login) with JWT tokens; OAuth2 flow support for service integrations (Google Drive)
 - **Real-time Updates** — WebSocket streams for tool execution and server status changes
 - **Google Drive Integration** — Connect via OAuth, list/search/retrieve files, create folders
 
@@ -35,6 +35,7 @@ MCPStudio is a web platform for creating, testing, managing, and discovering [Mo
 | Routing | react-router-dom 6 |
 | Charts | Recharts 2 |
 | Node Graph | @xyflow/react (React Flow) + @dagrejs/dagre |
+| Auth | @supabase/supabase-js (email/password) |
 | Local DB | Dexie (IndexedDB wrapper) |
 | Config Parsing | js-yaml + Zod |
 | Notifications | Sonner |
@@ -72,7 +73,7 @@ backend/mcp_studio_backend/src/mcp_studio/
 ```
 frontend/ai-server-forge/src/
 ├── features/
-│   ├── auth/         # Login page, AuthGuard, auth store, use-auth hook
+│   ├── auth/         # Login & Signup pages, AuthGuard, auth store, Supabase hooks
 │   ├── servers/      # Dashboard, ServerDetail, ServerCard, ConfigExport,
 │   │                 # ConfigImport, config-serializer (JSON/YAML), use-servers
 │   ├── tools/        # ToolEditor, ParameterEditor, CodeEditor, use-tools
@@ -84,7 +85,9 @@ frontend/ai-server-forge/src/
 │   ├── layout/       # MainLayout, Header, Sidebar
 │   └── ui/           # shadcn/ui component library (47+ components)
 ├── stores/           # Zustand stores (auth, ui, server)
-├── lib/api/          # Typed API client with auto bearer token injection
+├── lib/
+│   ├── api/          # Typed API client with auto bearer token injection
+│   └── supabase.ts   # Supabase client initialization
 ├── hooks/            # Shared hooks (use-mobile, use-toast)
 └── types/            # TypeScript types matching backend Pydantic schemas
 ```
@@ -120,12 +123,13 @@ npm install
 npm run dev  # runs on :8080
 ```
 
-Open your browser at `http://localhost:8080` and log in with `admin` / `password`.
+Open your browser at `http://localhost:8080` and sign up for a new account, or log in with existing credentials.
 
 ## API Endpoints
 
 | Method | Path | Purpose |
 |--------|------|---------|
+| `POST` | `/api/auth/register` | Register new user |
 | `POST` | `/api/auth/token` | Login (OAuth2 password flow) |
 | `GET` | `/api/auth/me` | Current user info |
 | `GET` | `/api/auth/google/auth` | Google OAuth URL |
@@ -155,6 +159,7 @@ MCPStudio follows a phased enhancement plan inspired by patterns from [Unsloth S
 | 4 | Visual MCP Pipeline Builder — React Flow canvas, DAG execution, dagre auto-layout | Done |
 | 5 | Tool Execution Arena — side-by-side comparison with JSON diff | Done |
 | 6 | Config Export/Import — JSON/YAML with Zod validation, drag & drop import | Done |
+| 7 | Supabase Auth — email/password signup & login, replacing hardcoded credentials | Done |
 
 See [EXPERIMENT.md](./EXPERIMENT.md) for detailed tracking.
 

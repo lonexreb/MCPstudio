@@ -25,7 +25,8 @@ npm run dev  # runs on :8080
 
 ### Prerequisites
 - Python 3.10+, Node.js 16+, MongoDB (optional — falls back to in-memory mock)
-- Default login credentials: `admin` / `password`
+- Supabase project (or configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`)
+- Sign up for a new account via `/signup`, or use the legacy `admin` / `password` fallback on the backend
 
 ## Architecture
 
@@ -44,7 +45,7 @@ backend/mcp_studio_backend/src/mcp_studio/
 
 frontend/ai-server-forge/src/
 ├── features/
-│   ├── auth/         # AuthGuard, Login page, use-auth hook, auth-store
+│   ├── auth/         # AuthGuard, Login & Signup pages, Supabase auth hooks, auth-store
 │   ├── servers/      # Dashboard, NewServer, ServerDetail, ServerCard, ServerList,
 │   │                 # ConfigExport, ConfigImport, config-serializer, use-servers, server-store
 │   ├── tools/        # ToolEditor, CodeEditor, ParameterEditor, ReturnTypeEditor, use-tools
@@ -61,6 +62,7 @@ frontend/ai-server-forge/src/
 ├── hooks/            # use-mobile, use-toast (shared utilities)
 ├── lib/
 │   ├── api/          # Typed API client (client, servers, tools, auth)
+│   ├── supabase.ts   # Supabase client initialization
 │   └── utils.ts      # cn() classname helper
 ├── types/
 │   ├── api.ts        # TypeScript types matching backend Pydantic schemas
@@ -71,6 +73,7 @@ frontend/ai-server-forge/src/
 
 | Path | Feature | Notes |
 |------|---------|-------|
+| `/signup` | auth | Create account (Supabase) |
 | `/` | servers | Dashboard |
 | `/new-server` | servers | Create server |
 | `/server/:id` | servers | Detail + tool testing + config export/import |
@@ -89,14 +92,14 @@ frontend/ai-server-forge/src/
 - **Frontend state**: Zustand stores with `persist` middleware (localStorage)
 - **Frontend data fetching**: React Query hooks wrapping typed API client (`lib/api/`)
 - **Frontend UI**: shadcn/ui components (Radix primitives + Tailwind)
-- **Auth flow**: JWT tokens stored in Zustand auth store; AuthGuard redirects to `/login`; API client auto-injects bearer token
+- **Auth flow**: Supabase email/password auth on frontend; JWT tokens stored in Zustand auth store; AuthGuard redirects to `/login`; API client auto-injects bearer token
 - **Styling**: Tailwind CSS with custom `mcp.blue` (#2563eb), `mcp.purple` (#7c3aed), `mcp.teal` (#0d9488) color tokens
 - **Path alias**: `@/` maps to `frontend/ai-server-forge/src/`
 
 ## Known Issues
 
-### Hardcoded auth credentials
-`auth_controller.py` has hardcoded `admin/password` for MVP login. No real user database.
+### Auth in transition
+Frontend uses Supabase auth (email/password). Backend still has hardcoded `admin/password` fallback and an in-memory `_users_db` for the `/register` endpoint — not persisted across restarts. Server/tool routes currently bypass auth guards (hardcoded user).
 
 ### Circular dependency workaround
 `ServerService` ↔ `ToolService` circular reference resolved in `container.py` via `.with_tool_service()` / `.with_server_service()` post-init methods.
@@ -123,6 +126,7 @@ pytest tests/unit/        # unit tests only
 
 | Method | Path | Purpose |
 |--------|------|---------|
+| POST | `/api/auth/register` | Register new user |
 | POST | `/api/auth/token` | Login (OAuth2 password flow) |
 | GET | `/api/auth/google/auth` | Google OAuth URL |
 | GET | `/api/auth/google/callback` | Google OAuth callback |
@@ -142,5 +146,6 @@ pytest tests/unit/        # unit tests only
 - **Frontend app**: `frontend/ai-server-forge/src/App.tsx`
 - **API types**: `frontend/ai-server-forge/src/types/api.ts`
 - **API client**: `frontend/ai-server-forge/src/lib/api/client.ts`
-- **Auth store**: `frontend/ai-server-forge/src/stores/auth-store.ts`
+- **Auth store**: `frontend/ai-server-forge/src/features/auth/stores/auth-store.ts`
+- **Supabase client**: `frontend/ai-server-forge/src/lib/supabase.ts`
 - **Tailwind config**: `frontend/ai-server-forge/tailwind.config.ts`

@@ -15,6 +15,7 @@ MCPStudio was enhanced with patterns from [Unsloth Studio](https://github.com/un
 | Data Recipes (React Flow) | Visual MCP Pipeline Builder with DAG execution | Done |
 | Model Arena | Tool Execution Arena (side-by-side with JSON diff) | Done |
 | YAML config export | Config Export/Import (JSON/YAML with zod validation) | Done |
+| User auth (Supabase/Firebase) | Supabase Auth (email/password signup & login) | Done |
 
 ## Implementation Phases
 
@@ -62,6 +63,18 @@ MCPStudio was enhanced with patterns from [Unsloth Studio](https://github.com/un
 - [x] Import via file upload (drag & drop) or paste with inline validation
 - [x] Export button on ServerDetail, Import button on Dashboard
 
+### Phase 7: Supabase Auth Integration (COMPLETE)
+- [x] Add Supabase client (`@supabase/supabase-js`) with env-configurable URL and anon key
+- [x] Replace hardcoded admin/password login with Supabase email/password auth
+- [x] Add Signup page with username, email, password, and confirm password
+- [x] Update Login page to use email instead of username
+- [x] Wire `useLogin`, `useRegister`, and `useCurrentUser` hooks to Supabase
+- [x] Add `supabase.auth.signOut()` to logout flow
+- [x] Add backend `/api/auth/register` endpoint with in-memory user store
+- [x] Fix DI resolution in routes (use container factory methods instead of `.resolve()`)
+- [x] Fix async/sync mismatch in `MockCollection.find()` and mongo repo `_get_collection()`
+- [x] Temporarily bypass auth guards on server/tool routes for development
+
 ## Dependencies Added
 
 | Package | Purpose | Phase |
@@ -71,6 +84,7 @@ MCPStudio was enhanced with patterns from [Unsloth Studio](https://github.com/un
 | `@xyflow/react` | Visual node-graph pipeline builder | 4 |
 | `@dagrejs/dagre` | Auto-layout for pipeline graphs | 4 |
 | `js-yaml` + `@types/js-yaml` | YAML config export/import | 6 |
+| `@supabase/supabase-js` | Supabase auth (email/password signup & login) | 7 |
 
 ## PR History
 
