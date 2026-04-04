@@ -3,11 +3,21 @@ import type { ExecutionRecord } from '@/features/execution/types/execution';
 import type { PipelineRecord, PipelineExecutionRecord } from '@/features/pipeline/types/pipeline';
 import type { PromptTemplate } from '@/features/prompts/types/prompt';
 
+export interface FeedbackRecord {
+  id?: number;
+  name: string;
+  email: string;
+  category: string;
+  message: string;
+  createdAt: Date;
+}
+
 class MCPStudioDB extends Dexie {
   executions!: Table<ExecutionRecord>;
   pipelines!: Table<PipelineRecord>;
   pipelineExecutions!: Table<PipelineExecutionRecord>;
   prompts!: Table<PromptTemplate>;
+  feedback!: Table<FeedbackRecord>;
 
   constructor() {
     super('mcpstudio');
@@ -27,6 +37,14 @@ class MCPStudioDB extends Dexie {
       pipelines: '++id, name, updatedAt',
       pipelineExecutions: '++id, pipelineId, timestamp',
       prompts: '++id, name, *tags, serverId, updatedAt',
+    });
+
+    this.version(4).stores({
+      executions: '++id, serverId, toolId, timestamp',
+      pipelines: '++id, name, updatedAt',
+      pipelineExecutions: '++id, pipelineId, timestamp',
+      prompts: '++id, name, *tags, serverId, updatedAt',
+      feedback: '++id, category, createdAt',
     });
   }
 }

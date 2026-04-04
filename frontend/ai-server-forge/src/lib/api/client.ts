@@ -16,6 +16,13 @@ class ApiError extends Error {
   }
 }
 
+const MAX_RETRIES = 2;
+const RETRY_DELAY = 1000;
+
+function isRetryable(status: number): boolean {
+  return status >= 500 || status === 408 || status === 429;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -31,30 +38,55 @@ async function request<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${getBaseUrl()}${path}`, {
-    ...options,
-    headers,
-  });
+  let lastError: Error | null = null;
 
-  if (response.status === 401) {
-    useAuthStore.getState().logout();
-    throw new ApiError(401, 'Unauthorized');
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(`${getBaseUrl()}${path}`, {
+        ...options,
+        headers,
+      });
+
+      if (response.status === 401) {
+        useAuthStore.getState().logout();
+        throw new ApiError(401, 'Unauthorized');
+      }
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        const error = new ApiError(
+          response.status,
+          data?.detail || `Request failed with status ${response.status}`,
+          data,
+        );
+
+        if (isRetryable(response.status) && attempt < MAX_RETRIES) {
+          lastError = error;
+          await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
+          continue;
+        }
+
+        throw error;
+      }
+
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      return response.json();
+    } catch (err) {
+      if (err instanceof ApiError) throw err;
+
+      // Network error — retry if attempts remain
+      lastError = err as Error;
+      if (attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
+        continue;
+      }
+    }
   }
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new ApiError(
-      response.status,
-      data?.detail || `Request failed with status ${response.status}`,
-      data,
-    );
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
+  throw lastError || new Error('Request failed after retries');
 }
 
 export const api = {

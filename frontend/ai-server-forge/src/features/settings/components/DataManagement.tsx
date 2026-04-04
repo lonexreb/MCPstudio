@@ -1,5 +1,10 @@
 import { Trash2, Download, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { db } from '@/features/execution/lib/db';
 
@@ -49,14 +54,52 @@ const DataManagement = () => {
             <Download className="h-4 w-4 mr-1.5" />
             Export All Data
           </Button>
-          <Button variant="outline" size="sm" onClick={clearExecutions} className="text-destructive hover:text-destructive">
-            <Trash2 className="h-4 w-4 mr-1.5" />
-            Clear Executions
-          </Button>
-          <Button variant="outline" size="sm" onClick={clearPipelines} className="text-destructive hover:text-destructive">
-            <Trash2 className="h-4 w-4 mr-1.5" />
-            Clear Pipelines
-          </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4 mr-1.5" />
+                Clear Executions
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear execution history?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all local execution records. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={clearExecutions} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Clear
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4 mr-1.5" />
+                Clear Pipelines
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear all pipelines?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all saved pipelines and their execution records. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={clearPipelines} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Clear
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>

@@ -51,7 +51,7 @@ const ServerDetail = () => {
 
   const { data: server, isLoading, error } = useServer(id);
   const { data: tools } = useTools(id);
-  const { data: resources } = useResources(server?.status === 'connected' ? id : undefined);
+  const { data: resources, error: resourcesError } = useResources(server?.status === 'connected' ? id : undefined);
   const serverPrompts = usePrompts(id);
   const connectServer = useConnectServer();
   const disconnectServer = useDisconnectServer();
@@ -492,7 +492,15 @@ const ServerDetail = () => {
                     <p className="text-sm text-muted-foreground">Connected data sources and external services</p>
                   </div>
                 </div>
-                {resources && resources.length > 0 ? (
+                {resourcesError ? (
+                  <div className="text-center border border-red-500/30 rounded-md p-8 bg-red-500/5">
+                    <Database className="h-12 w-12 mx-auto text-red-400 mb-3" />
+                    <h3 className="text-lg font-medium mb-2 text-red-400">Failed to load resources</h3>
+                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                      Could not fetch resources from this server.
+                    </p>
+                  </div>
+                ) : resources && resources.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {resources.map((resource) => (
                       <ResourceCard key={resource.uri} resource={resource} serverName={server?.name} />
@@ -531,8 +539,8 @@ const ServerDetail = () => {
                         key={prompt.id}
                         prompt={prompt}
                         onEdit={(p) => { setEditingPrompt(p); setPromptEditorOpen(true); }}
-                        onDelete={(pid) => deletePrompt(pid)}
-                        onDuplicate={(pid) => duplicatePrompt(pid)}
+                        onDelete={(pid) => deletePrompt(pid).catch(() => toast.error('Failed to delete prompt'))}
+                        onDuplicate={(pid) => duplicatePrompt(pid).catch(() => toast.error('Failed to duplicate prompt'))}
                       />
                     ))}
                   </div>

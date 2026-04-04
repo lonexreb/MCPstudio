@@ -24,6 +24,7 @@ import ExecutionHistoryPage from "@/features/execution/pages/ExecutionHistoryPag
 import DiscoveryPage from "@/features/discovery/pages/DiscoveryPage";
 import SplashScreen from "@/features/onboarding/components/SplashScreen";
 import TourOverlay from "@/features/onboarding/components/TourOverlay";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -66,6 +68,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

@@ -1,6 +1,9 @@
 # File: src/mcp_studio/api/controllers/server_controller.py
+import logging
 from typing import List, Dict, Any, Optional
 from fastapi import HTTPException, status
+
+logger = logging.getLogger(__name__)
 
 from mcp_studio.domain.models.server import Server
 from mcp_studio.domain.repositories.server_repository import ServerRepository
@@ -122,13 +125,17 @@ class ServerController:
             )
 
         try:
-            connection = await self.server_service.mcp_protocol_service.connect(
+            protocol_service = self.server_service.mcp_protocol_service
+            if not protocol_service:
+                return {"resources": [], "server_id": server_id}
+            connection = await protocol_service.connect(
                 server.connection_url,
                 server.auth_config
             )
-            resources = await self.server_service.mcp_protocol_service.discover_resources(connection)
+            resources = await protocol_service.discover_resources(connection)
             return {"resources": resources, "server_id": server_id}
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Failed to discover resources for server {server_id}: {e}")
             return {"resources": [], "server_id": server_id}
 
     async def execute_tool(self, server_id: str, tool_id: str, parameters: Dict[str, Any]) -> Dict[str, Any]:

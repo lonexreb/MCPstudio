@@ -4,6 +4,11 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useServerExecutionHistory } from '../hooks/use-server-history';
 import { executionsApi, type ExecutionResultResponse } from '@/lib/api/executions';
@@ -102,10 +107,28 @@ const ExecutionHistoryPage = () => {
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={handleClear} className="text-white border-white/30 hover:bg-white/10">
-              <Trash2 className="h-4 w-4 mr-1.5" />
-              Clear All
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10">
+                  <Trash2 className="h-4 w-4 mr-1.5" />
+                  Clear All
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Clear all execution history?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete all server-side execution records. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClear} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Clear All
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 

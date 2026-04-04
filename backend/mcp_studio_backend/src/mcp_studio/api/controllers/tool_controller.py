@@ -83,7 +83,7 @@ class ToolController:
             List of tools
         """
         try:
-            tools = await self.tool_service.get_tools_for_server(server_id)
+            tools = await self.tool_service.get_tools_by_server_id(server_id)
             
             return ToolListResponse(
                 tools=[
@@ -164,18 +164,17 @@ class ToolController:
             Tool execution result
         """
         try:
-            result = await self.server_service.execute_tool(
-                server_id,
+            result = await self.tool_service.execute_tool(
                 tool_id,
                 request.parameters
             )
-            
+
             return ToolExecutionResponse(
                 tool_id=tool_id,
                 parameters=request.parameters,
-                result=result.result,
-                status=result.status,
-                execution_time=result.execution_time
+                result=result["result"],
+                status=result["status"],
+                execution_time=result["execution_time"]
             )
         except Exception as e:
             logger.error(f"Error executing tool: {e}")

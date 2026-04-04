@@ -22,6 +22,10 @@ logger = logging.getLogger(__name__)
 # Startup and shutdown events
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Validate critical config
+    if not settings.jwt_secret_key:
+        logger.warning("JWT_SECRET_KEY is not set — auth will not work. Set it in .env or environment.")
+
     # Startup: Connect to the database
     await database.connect_to_database()
     logger.info("Connected to MongoDB")

@@ -8,6 +8,9 @@ from mcp_studio.container import get_container
 
 router = APIRouter()
 
+# TODO: Replace with real auth dependency when auth is fully wired
+_current_user = {"id": "1", "username": "user"}
+
 
 def get_execution_controller() -> ExecutionController:
     return get_container().execution_controller()

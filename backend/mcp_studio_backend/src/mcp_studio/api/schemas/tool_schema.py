@@ -1,5 +1,5 @@
 # File: src/mcp_studio/api/schemas/tool_schema.py
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 
@@ -49,5 +49,5 @@ class ToolExecutionResponse(BaseModel):
     tool_id: str = Field(..., description="Tool ID")
     parameters: Dict[str, Any] = Field(..., description="Tool parameters used")
     result: Dict[str, Any] = Field(..., description="Tool execution result")
-    status: str = Field(..., description="Execution status (success, error)")
+    status: Literal["success", "error"] = Field(..., description="Execution status")
     execution_time: int = Field(..., description="Execution time in milliseconds")

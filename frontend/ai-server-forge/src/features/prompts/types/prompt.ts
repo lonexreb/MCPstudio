@@ -7,6 +7,6 @@ export interface PromptTemplate {
   toolId?: string;
   serverId?: string;
   tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }

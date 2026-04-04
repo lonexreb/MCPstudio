@@ -18,15 +18,15 @@ class Settings(BaseSettings):
     port: int = 8000
     debug: bool = True
     
-    # CORS settings
-    cors_origins: List[str] = ["*"]
+    # CORS settings — override via CORS_ORIGINS env var for production
+    cors_origins: List[str] = ["http://localhost:8080", "http://localhost:5173", "http://localhost:3000"]
     
     # MongoDB settings
     mongodb_url: str = "mongodb://localhost:27017"
     mongodb_db_name: str = "mcp_studio"
     
-    # JWT settings
-    jwt_secret_key: str = "your-secret-key-change-in-production"
+    # JWT settings — MUST be set via JWT_SECRET_KEY env var or .env file
+    jwt_secret_key: str = ""
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 30
     

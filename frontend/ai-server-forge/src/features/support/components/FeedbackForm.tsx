@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { db } from '@/features/execution/lib/db';
 
 const FeedbackForm = () => {
   const [name, setName] = useState('');
@@ -20,11 +21,18 @@ const FeedbackForm = () => {
   const [message, setMessage] = useState('');
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await db.feedback.add({
+      name: name.trim(),
+      email: email.trim(),
+      category: category || 'other',
+      message: message.trim(),
+      createdAt: new Date(),
+    });
     toast({
-      title: 'Feedback received',
-      description: 'Thank you for your feedback! We appreciate it.',
+      title: 'Feedback saved',
+      description: 'Your feedback has been stored locally. Thank you!',
     });
     setName('');
     setEmail('');

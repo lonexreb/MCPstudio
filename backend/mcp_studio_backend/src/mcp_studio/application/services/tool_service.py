@@ -11,6 +11,24 @@ from mcp_studio.infrastructure.messaging.event_bus import EventBus, ToolExecutio
 
 logger = logging.getLogger(__name__)
 
+_SENSITIVE_KEYS = {"password", "secret", "token", "api_key", "apikey", "access_token",
+                   "refresh_token", "credentials", "private_key", "auth"}
+
+
+def _redact_params(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a copy of params with sensitive values replaced by '[REDACTED]'."""
+    if not params:
+        return params
+    redacted = {}
+    for key, value in params.items():
+        if any(s in key.lower() for s in _SENSITIVE_KEYS):
+            redacted[key] = "[REDACTED]"
+        elif isinstance(value, dict):
+            redacted[key] = _redact_params(value)
+        else:
+            redacted[key] = value
+    return redacted
+
 
 class ToolService:
     """Service for tool operations."""
@@ -124,7 +142,7 @@ class ToolService:
                         server_name=server.name,
                         tool_id=tool_id,
                         tool_name=tool.name,
-                        parameters=parameters,
+                        parameters=_redact_params(parameters),
                         result=result,
                         status="success",
                         execution_time=execution_time,
@@ -163,7 +181,7 @@ class ToolService:
                         server_name=server.name,
                         tool_id=tool_id,
                         tool_name=tool.name,
-                        parameters=parameters,
+                        parameters=_redact_params(parameters),
                         result={"error": str(e)},
                         status="error",
                         execution_time=0,

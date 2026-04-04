@@ -10,28 +10,15 @@ interface CodeEditorProps {
   showLineNumbers?: boolean;
 }
 
-// This is a simple code editor component. In a real implementation,
-// you might use Monaco Editor, CodeMirror, or another full-featured editor.
-const CodeEditor = ({ 
-  value, 
-  onChange, 
-  language = 'javascript', 
+const CodeEditor = ({
+  value,
+  onChange,
+  language = 'javascript',
   height = '300px',
-  showLineNumbers = true 
+  showLineNumbers = true
 }: CodeEditorProps) => {
-  // Simple syntax highlighting function for JavaScript
-  const highlightSyntax = (code: string): string => {
-    // This is a very basic implementation
-    return code
-      .replace(/\/\/.*/g, '<span class="code-token-comment">$&</span>')
-      .replace(/(".*?"|'.*?'|`.*?`)/g, '<span class="code-token-string">$&</span>')
-      .replace(/\b(function|return|const|let|var|if|else|for|while|async|await)\b/g, '<span class="code-token-keyword">$&</span>')
-      .replace(/\b([A-Za-z]+)(?=\()/g, '<span class="code-token-property">$&</span>');
-  };
-  
-  // Generate line numbers
   const lineNumbers = value.split('\n').map((_, i) => i + 1).join('\n');
-  
+
   return (
     <div className="border rounded-md overflow-hidden" style={{ height }}>
       <div className="flex h-full">
@@ -45,15 +32,11 @@ const CodeEditor = ({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             className={cn(
-              "absolute inset-0 p-2 font-mono text-transparent caret-foreground bg-transparent resize-none",
+              "absolute inset-0 p-2 font-mono text-sm bg-transparent resize-none",
               "focus:outline-none focus:ring-0 focus:border-primary",
-              "w-full h-full"
+              "w-full h-full leading-relaxed"
             )}
             spellCheck={false}
-          />
-          <pre 
-            className={cn("p-2 font-mono text-sm leading-relaxed pointer-events-none", "code-editor")}
-            dangerouslySetInnerHTML={{ __html: highlightSyntax(value) }}
           />
         </div>
       </div>

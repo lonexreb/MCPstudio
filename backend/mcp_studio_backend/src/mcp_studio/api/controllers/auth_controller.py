@@ -52,18 +52,15 @@ class AuthController:
         """
         Authenticate a user with username and password.
         """
-        # Check registered users first
-        if form_data.username in _users_db:
-            if not self.auth_service.verify_password(form_data.password, _users_db[form_data.username]):
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect username or password",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
-        # Fallback to hardcoded admin/password for backward compat
-        elif form_data.username != "admin" or not self.auth_service.verify_password(
-            form_data.password, self.auth_service.get_password_hash("password")
-        ):
+        # Check registered users
+        if form_data.username not in _users_db:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if not self.auth_service.verify_password(form_data.password, _users_db[form_data.username]):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
