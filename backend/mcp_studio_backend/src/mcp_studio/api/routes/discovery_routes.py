@@ -1,15 +1,13 @@
 # File: src/mcp_studio/api/routes/discovery_routes.py
-from typing import Optional
+from typing import Optional, Dict, Any
 from fastapi import APIRouter, Depends, Query
 
 from mcp_studio.api.controllers.discovery_controller import DiscoveryController
 from mcp_studio.api.schemas.discovery_schema import DiscoverySearchResponse
+from mcp_studio.api.deps import get_current_user
 from mcp_studio.container import get_container
 
 router = APIRouter()
-
-# TODO: Replace with real auth dependency when auth is fully wired
-_current_user = {"id": "1", "username": "user"}
 
 
 def get_discovery_controller() -> DiscoveryController:
@@ -22,6 +20,7 @@ async def search_servers(
     source: Optional[str] = Query(None, description="Filter by source (npm, github)"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
+    current_user: Dict[str, Any] = Depends(get_current_user),
     controller: DiscoveryController = Depends(get_discovery_controller),
 ):
     """Search for MCP servers in public registries."""
@@ -30,6 +29,7 @@ async def search_servers(
 
 @router.get("/discovery/categories")
 async def get_categories(
+    current_user: Dict[str, Any] = Depends(get_current_user),
     controller: DiscoveryController = Depends(get_discovery_controller),
 ):
     """Get available server categories."""

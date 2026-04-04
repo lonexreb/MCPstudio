@@ -17,7 +17,7 @@ const Arena = () => {
     <MainLayout title="Execution Arena" subtitle="Compare tool executions side by side">
       <div className="space-y-4">
         {/* Arena header */}
-        <div className="flex items-center justify-between">
+        <div data-tour="arena-hero" className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg gradient-warm flex items-center justify-center shadow-md">
               <Swords className="h-5 w-5 text-white" />

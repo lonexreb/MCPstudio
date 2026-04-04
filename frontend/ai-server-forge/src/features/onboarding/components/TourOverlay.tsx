@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,19 +11,20 @@ const TourOverlay = () => {
   const { isTourActive, currentStep, nextStep, prevStep, setOnboardingDone, skipTour } = useOnboardingStore();
   const navigate = useNavigate();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const stepRef = useRef(tourSteps[currentStep]);
 
   const step = tourSteps[currentStep];
   const isLast = currentStep === tourSteps.length - 1;
 
+  // Keep ref in sync without triggering effect re-runs
+  stepRef.current = step;
+
   const updateTargetRect = useCallback(() => {
-    if (!step) return;
-    const el = document.querySelector(step.target);
-    if (el) {
-      setTargetRect(el.getBoundingClientRect());
-    } else {
-      setTargetRect(null);
-    }
-  }, [step]);
+    const current = stepRef.current;
+    if (!current) return;
+    const el = document.querySelector(current.target);
+    setTargetRect(el ? el.getBoundingClientRect() : null);
+  }, []);
 
   useEffect(() => {
     if (!isTourActive || !step) return;
@@ -32,14 +33,14 @@ const TourOverlay = () => {
       navigate(step.route);
     }
 
-    // Small delay for route transition then find element
+    // Delay for route transition, then find element
     const timer = setTimeout(updateTargetRect, 150);
     window.addEventListener('resize', updateTargetRect);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', updateTargetRect);
     };
-  }, [isTourActive, step, navigate, updateTargetRect]);
+  }, [isTourActive, currentStep, navigate, updateTargetRect]);
 
   const handleNext = () => {
     if (isLast) {
@@ -73,7 +74,6 @@ const TourOverlay = () => {
       }
     : undefined;
 
-  // Position the tooltip card
   const getTooltipStyle = () => {
     if (!targetRect) return { position: 'fixed' as const, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 102 };
 

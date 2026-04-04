@@ -1,4 +1,5 @@
 # File: src/mcp_studio/application/services/discovery_service.py
+import asyncio
 import logging
 import time
 from typing import List, Dict, Any, Optional
@@ -8,8 +9,9 @@ from mcp_studio.infrastructure.external.registry.github_client import search_git
 
 logger = logging.getLogger(__name__)
 
-# Simple in-memory cache with TTL
+# Async-safe in-memory cache with TTL
 _cache: Dict[str, Any] = {}
+_cache_lock = asyncio.Lock()
 CACHE_TTL = 300  # 5 minutes
 
 
@@ -17,15 +19,17 @@ def _cache_key(prefix: str, **kwargs) -> str:
     return f"{prefix}:{':'.join(f'{k}={v}' for k, v in sorted(kwargs.items()))}"
 
 
-def _get_cached(key: str):
-    entry = _cache.get(key)
-    if entry and time.time() - entry["ts"] < CACHE_TTL:
-        return entry["data"]
-    return None
+async def _get_cached(key: str):
+    async with _cache_lock:
+        entry = _cache.get(key)
+        if entry and time.time() - entry["ts"] < CACHE_TTL:
+            return entry["data"]
+        return None
 
 
-def _set_cached(key: str, data):
-    _cache[key] = {"data": data, "ts": time.time()}
+async def _set_cached(key: str, data):
+    async with _cache_lock:
+        _cache[key] = {"data": data, "ts": time.time()}
 
 
 class DiscoveryService:
@@ -39,7 +43,7 @@ class DiscoveryService:
         limit: int = 20,
     ) -> Dict[str, Any]:
         cache_key = _cache_key("search", query=query, source=source or "all", page=page, limit=limit)
-        cached = _get_cached(cache_key)
+        cached = await _get_cached(cache_key)
         if cached:
             return cached
 
@@ -62,7 +66,7 @@ class DiscoveryService:
             "page": page,
             "pages": max(1, (len(results) + limit - 1) // limit),
         }
-        _set_cached(cache_key, response)
+        await _set_cached(cache_key, response)
         return response
 
     async def get_categories(self) -> List[str]:

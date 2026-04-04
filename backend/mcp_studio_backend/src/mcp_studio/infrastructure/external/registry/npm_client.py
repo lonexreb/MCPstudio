@@ -12,7 +12,7 @@ NPM_SEARCH_URL = "https://registry.npmjs.org/-/v1/search"
 async def search_npm_mcp_servers(query: str = "mcp server", size: int = 20, offset: int = 0) -> List[Dict[str, Any]]:
     """Search npm registry for MCP server packages."""
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=15.0, headers={"User-Agent": "MCPStudio/1.0"}) as client:
             response = await client.get(
                 NPM_SEARCH_URL,
                 params={"text": query, "size": size, "from": offset},

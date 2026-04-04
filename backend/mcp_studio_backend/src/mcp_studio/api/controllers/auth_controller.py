@@ -34,6 +34,13 @@ class AuthController:
     
     async def register(self, data: RegisterRequest) -> TokenResponse:
         """Register a new user."""
+        # Password strength: require at least one letter and one digit
+        if not any(c.isalpha() for c in data.password) or not any(c.isdigit() for c in data.password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password must contain at least one letter and one digit",
+            )
+
         if data.username in _users_db:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

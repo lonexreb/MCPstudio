@@ -22,8 +22,8 @@ class GoogleAuthResponse(BaseModel):
 class RegisterRequest(BaseModel):
     """Schema for user registration."""
 
-    username: str = Field(..., description="Username", min_length=3)
-    password: str = Field(..., description="Password", min_length=4)
+    username: str = Field(..., description="Username", min_length=3, max_length=50)
+    password: str = Field(..., description="Password", min_length=8, max_length=128)
 
 
 class GoogleAuthRequest(BaseModel):

@@ -33,7 +33,7 @@ const ToolsLibrary = () => {
     <MainLayout title="Tools Library" subtitle="Browse all tools across your MCP servers">
       <div className="space-y-6">
         {/* Hero */}
-        <div className="relative overflow-hidden rounded-2xl p-6 gradient-warm shadow-lg">
+        <div data-tour="tools-hero" className="relative overflow-hidden rounded-2xl p-6 gradient-warm shadow-lg">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-white blur-3xl" />
           </div>

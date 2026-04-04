@@ -539,8 +539,8 @@ const ServerDetail = () => {
                         key={prompt.id}
                         prompt={prompt}
                         onEdit={(p) => { setEditingPrompt(p); setPromptEditorOpen(true); }}
-                        onDelete={(pid) => deletePrompt(pid).catch(() => toast.error('Failed to delete prompt'))}
-                        onDuplicate={(pid) => duplicatePrompt(pid).catch(() => toast.error('Failed to duplicate prompt'))}
+                        onDelete={(pid) => deletePrompt(pid).catch((err) => toast.error(`Failed to delete prompt: ${err.message}`))}
+                        onDuplicate={(pid) => duplicatePrompt(pid).catch((err) => toast.error(`Failed to duplicate prompt: ${err.message}`))}
                       />
                     ))}
                   </div>

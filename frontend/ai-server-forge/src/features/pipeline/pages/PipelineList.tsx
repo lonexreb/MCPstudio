@@ -25,7 +25,7 @@ const PipelineList = () => {
   return (
     <MainLayout title="Pipelines" subtitle="Visual MCP tool chains">
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div data-tour="pipelines-hero" className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Your Pipelines</h2>
           <Button
             onClick={() => navigate('/pipelines/new')}

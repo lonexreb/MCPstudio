@@ -12,7 +12,7 @@ GITHUB_SEARCH_URL = "https://api.github.com/search/repositories"
 async def search_github_mcp_servers(query: str = "mcp server", per_page: int = 20, page: int = 1) -> List[Dict[str, Any]]:
     """Search GitHub for MCP server repositories."""
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=15.0, headers={"User-Agent": "MCPStudio/1.0"}) as client:
             response = await client.get(
                 GITHUB_SEARCH_URL,
                 params={
